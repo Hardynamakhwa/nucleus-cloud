@@ -4,6 +4,15 @@ import { useIsSignedIn, useIsSignedOut } from "./hooks/useAuth";
 import HomePage from "./pages/Home";
 import LoginPage from "./pages/Login";
 
+export type RootStackParamList = {
+    Login: undefined;
+    Home: undefined;
+    Folder: {
+        id: string;
+        name?: string;
+    };
+};
+
 const RootStack = createNativeStackNavigator({
     groups: {
         LoggedOut: {
