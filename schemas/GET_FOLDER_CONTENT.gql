@@ -1,17 +1,18 @@
-query {
+query GetFolderContents($folderId: UUID) {
     folder {
-        getAll {
+        getAll(parentId: $folderId) {
             id
             name
             createdAt
         }
     }
     file {
-        getAll {
+        getAll(folderId: $folderId) {
             id
             name
             size
             mimeType
+            ext
             createdAt
         }
     }

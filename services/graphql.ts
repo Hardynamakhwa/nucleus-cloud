@@ -8,6 +8,7 @@ const httpLink = new HttpLink({
 const client = new ApolloClient({
     link: concat(graphqlAuthMiddleware, httpLink),
     cache: new InMemoryCache(),
+    
 });
 
 export default client;

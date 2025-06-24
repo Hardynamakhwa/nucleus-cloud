@@ -1,0 +1,158 @@
+"""
+Date with time (isoformat)
+"""
+scalar DateTime
+type DeleteResponse {
+    success: Boolean!
+    message: String!
+}
+type FileDeleteResult {
+    success: Boolean!
+    message: String!
+}
+type FileMutations {
+    create(file: Upload!, folderId: String = null): FileType!
+    delete(id: UUID!): FileDeleteResult!
+    update(id: UUID!, input: FileUpdateInput!): FileType!
+}
+input FilePermissionCreateInput {
+    userId: UUID!
+    fileId: UUID!
+    role: FileRole!
+}
+type FilePermissionMutations {
+    create(input: FilePermissionCreateInput!): FilePermissionType!
+}
+type FilePermissionQueries {
+    get(id: String!): FilePermissionType
+    getAll: [FilePermissionType!]!
+}
+type FilePermissionType {
+    id: UUID!
+    userId: String!
+    file: FileType!
+    role: Role!
+    user: UserType!
+}
+type FileQueries {
+    get(id: UUID!): FileType
+    getAll(folderId: UUID = null): [FileType!]!
+}
+enum FileRole {
+    owner
+    viewer
+    editor
+}
+type FileType {
+    id: UUID!
+    name: String!
+    createdAt: DateTime!
+    updatedAt: DateTime
+    folder: FolderType
+    starred: Boolean!
+    file: String!
+    size: Int!
+    mimeType: String!
+    ext: String!
+    permissions: [FilePermissionType!]!
+    links: [LinkType!]!
+}
+input FileUpdateInput {
+    name: String = null
+    folderId: UUID = null
+    starred: Boolean = null
+}
+input FolderCreationInput {
+    name: String!
+    parentId: UUID = null
+}
+type FolderMutations {
+    create(input: FolderCreationInput!): FolderType!
+    update(id: UUID!, input: FolderUpdateInput!): FolderType!
+    delete(id: UUID!): DeleteResponse!
+}
+type FolderPermissionQueries {
+    get(id: String!): FolderPermissionType
+    getAll: [FolderPermissionType!]!
+}
+type FolderPermissionType {
+    id: UUID!
+    userId: String!
+    folder: FolderType!
+    role: Role!
+    user: UserType!
+}
+type FolderQueries {
+    get(id: UUID!): FolderType
+    getAll(parentId: UUID = null): [FolderType!]!
+}
+type FolderType {
+    id: UUID!
+    name: String!
+    createdAt: DateTime!
+    updatedAt: DateTime
+    folders: [FolderType!]!
+    files: [FileType!]!
+    links: [LinkType!]!
+    permissions: [FolderPermissionType!]!
+    parent: FolderType
+    owner: UserType!
+}
+input FolderUpdateInput {
+    name: String = null
+    parentId: UUID = null
+}
+input LinkInput {
+    fileId: UUID = null
+    folderId: UUID = null
+    password: String = null
+    expiresAt: DateTime = null
+}
+type LinkMutations {
+    create(input: LinkInput!): LinkType!
+}
+type LinkQueries {
+    getAll: [LinkType!]!
+    get(id: String!): LinkType
+    getByToken(token: String!, password: String = null): LinkType!
+}
+enum LinkTarget {
+    FOLDER
+    FILE
+}
+type LinkType {
+    id: UUID!
+    token: String!
+    targetType: LinkTarget!
+    targetId: UUID!
+    sharedWithSub: String
+    isPublic: Boolean!
+    createdAt: DateTime!
+    expiresAt: DateTime
+    folder: FolderType
+    file: FileType
+}
+type Mutation {
+    link: LinkMutations!
+    folder: FolderMutations!
+    file: FileMutations!
+    filePermission: FilePermissionMutations!
+}
+type Query {
+    link: LinkQueries!
+    file: FileQueries!
+    folder: FolderQueries!
+    filePermission: FilePermissionQueries!
+    folderPermission: FolderPermissionQueries!
+}
+enum Role {
+    owner
+    editor
+    viewer
+}
+scalar UUID
+scalar Upload
+type UserType {
+    id: UUID!
+    email: String!
+}
