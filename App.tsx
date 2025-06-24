@@ -1,20 +1,24 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { Navigation } from "./Router";
+import SignInProvider from "./contexts/SignIn";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { observer } from "mobx-react-lite";
+import store from "./stores";
+import { ApolloProvider } from "@apollo/client";
+import client from "./services/graphql";
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+function App() {
+    if (store.auth.loading && store.auth.user === null) {
+        return null;
+    }
+
+    return (
+        <SignInProvider>
+            <ApolloProvider client={client}>
+                <GestureHandlerRootView>
+                    <Navigation />
+                </GestureHandlerRootView>
+            </ApolloProvider>
+        </SignInProvider>
+    );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default observer(App);

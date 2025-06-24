@@ -1,0 +1,18 @@
+query {
+    folder {
+        getAll {
+            id
+            name
+            createdAt
+        }
+    }
+    file {
+        getAll {
+            id
+            name
+            size
+            mimeType
+            createdAt
+        }
+    }
+}
