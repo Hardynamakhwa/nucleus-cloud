@@ -7,7 +7,7 @@ import {
 } from "mobx";
 import * as SecureStore from "expo-secure-store";
 
-interface User {
+export interface User {
     id?: string;
     email: string;
 }
@@ -86,7 +86,7 @@ export class AuthStore {
         if (tokenStr) return JSON.parse(tokenStr) as Token;
         return null;
     }
-    
+
     public static getTokenSync(): Token | null {
         const tokenStr = SecureStore.getItem("token");
         if (tokenStr) return JSON.parse(tokenStr) as Token;
