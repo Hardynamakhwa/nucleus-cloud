@@ -1,8 +1,9 @@
 {
-  "experimentalOperatorPosition": "start",
-  "singleAttributePerLine": true,
-  "tabWidth": 4,
-  "experimentalTernaries": true,
-  "trailingComma": "es5",
-  "objectWrap": "preserve"
+    "experimentalOperatorPosition": "start",
+    "singleAttributePerLine": true,
+    "tabWidth": 4,
+    "experimentalTernaries": true,
+    "trailingComma": "es5",
+    "objectWrap": "preserve",
+    "plugins": ["prettier-plugin-tailwindcss"]
 }

@@ -1,15 +1,15 @@
-import { useTheme } from "@react-navigation/native";
+import { Theme, useTheme } from "@react-navigation/native";
 import { PropsWithChildren } from "react";
 import { Text as RNText, PixelRatio } from "react-native";
 
 interface TextProps {
-    color?: "primary" | "background" | "secondary";
+    color?: "primary" | "background" | "secondary" | "error";
     variant?: keyof typeof variants;
 }
 
 const scale = PixelRatio.getFontScale();
 
-const variants = {
+export const variants = {
     h1: {
         fontSize: 32 * scale,
         fontFamily: "RoobertHeavy",
@@ -55,6 +55,39 @@ export default function Text({
         primary: theme.colors.primary,
         background: theme.colors.background,
         secondary: theme.colors.text,
+        error: theme.colors.notification,
+    };
+
+    const variant =
+        props.variant
+        || (defaults.variant as NonNullable<TextProps["variant"]>);
+    const variantStyle = variants[variant];
+
+    return (
+        <RNText
+            style={{
+                color: colorMap[
+                    (props.color ?? defaults.color) as keyof typeof colorMap
+                ],
+                fontSize: variantStyle.fontSize,
+                fontFamily: variantStyle.fontFamily,
+            }}
+        >
+            {children}
+        </RNText>
+    );
+}
+
+export function TextThemed({
+    children,
+    theme,
+    ...props
+}: PropsWithChildren<TextProps & { theme: Theme }>) {
+    const colorMap = {
+        primary: theme.colors.primary,
+        background: theme.colors.background,
+        secondary: theme.colors.text,
+        error: theme.colors.notification,
     };
 
     const variant =

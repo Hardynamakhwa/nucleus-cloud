@@ -1,5 +1,7 @@
 import { createContext, PropsWithChildren, useContext } from "react";
-import { Text, TextInput, View, TextInputProps } from "react-native";
+import { TextInput, View, TextInputProps } from "react-native";
+import Text from "./Text";
+import { useTheme } from "@react-navigation/native";
 
 const FieldContext = createContext<{ errors?: string[] }>({
     errors: [],
@@ -10,19 +12,24 @@ export function Input(props: {
     type?: TextInputProps["keyboardType"];
     secure?: boolean;
 }) {
+    const theme = useTheme();
     const fieldContext = useContext(FieldContext);
     return (
-        <View>
+        <View className="my-1">
             <TextInput
-                placeholder="input"
                 onChangeText={props.onInput}
-                style={{}}
+                style={{
+                    borderColor: theme.colors.border,
+                    color: theme.colors.text,
+                }}
+                cursorColor={theme.colors.primary}
+                className="border p-3 text-base focus:border-2"
                 keyboardType={props.type}
                 secureTextEntry={props.secure}
             />
             {fieldContext.errors?.map((err, index) => (
                 <View key={index}>
-                    <Text style={{ color: "red" }}>{err}</Text>
+                    <Text color="error">{err}</Text>
                 </View>
             ))}
         </View>
@@ -32,7 +39,7 @@ export function Input(props: {
 export function Field(props: PropsWithChildren<{ errors?: string[] }>) {
     return (
         <FieldContext.Provider value={{ errors: props.errors }}>
-            <View>{props.children}</View>
+            <View className="flex-col p-4">{props.children}</View>
         </FieldContext.Provider>
     );
 }
@@ -40,7 +47,7 @@ export function Field(props: PropsWithChildren<{ errors?: string[] }>) {
 export function Label(props: PropsWithChildren) {
     return (
         <View>
-            <Text>{props.children}</Text>
+            <Text variant="h5">{props.children}</Text>
         </View>
     );
 }

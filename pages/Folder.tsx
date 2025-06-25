@@ -11,6 +11,9 @@ import {
 import { View } from "react-native";
 import { Field, Label, Input } from "../components/Input";
 import { Button } from "../components/Button";
+import ButtonNew from "../partials/ButtonNew";
+import ButtonUpload from "../partials/ButtonUpload";
+import Text from "../components/Text";
 
 type FolderRouteProp = RouteProp<RootStackParamList, "Folder">;
 type FolderNavigationProp = NativeStackNavigationProp<
@@ -64,17 +67,19 @@ export default function FolderPage() {
 
     return (
         <View style={{ flex: 1 }}>
-            <Field>
-                <Label>Folder name</Label>
-                <Input onInput={(text) => setName(text)} />
-            </Field>
-            <Button onTap={onCreateFolder}>Create</Button>
+            <View className="flex-row items-center gap-x-6 p-4">
+                <ButtonUpload />
+                <ButtonNew />
+            </View>
             <List
                 data={contents}
                 loading={loading}
                 refreshing={refreshing}
                 onTap={onTapHandler}
                 onRefresh={onRefresh}
+                header={
+                    <Text variant="h1">{route.params.name || route.name}</Text>
+                }
             />
         </View>
     );

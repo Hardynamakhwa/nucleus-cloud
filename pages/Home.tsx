@@ -1,22 +1,27 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { Text, View } from "react-native";
+import { useMutation, useQuery } from "@apollo/client";
+import { TouchableOpacity, View } from "react-native";
 import List, { FolderUnionFile } from "../partials/List";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../Router";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useTheme } from "@react-navigation/native";
 import {
     CreateFolderDocument,
     GetFolderContentsDocument,
 } from "../__generated__/schemas/graphql";
-import { Button } from "../components/Button";
-import { Field, Input, Label } from "../components/Input";
+import GravatarImage from "../components/GravatarImage";
+import useAuth from "../hooks/useAuth";
+import ButtonNew from "../partials/ButtonNew";
+import ButtonUpload from "../partials/ButtonUpload";
 
 type HomeNavigationProps = NativeStackNavigationProp<RootStackParamList>;
 
 export default function HomePage() {
     const navigation = useNavigation<HomeNavigationProps>();
+    const theme = useTheme();
+    const auth = useAuth();
+
     const { loading, data, refetch, error } = useQuery(
         GetFolderContentsDocument
     );
@@ -46,13 +51,29 @@ export default function HomePage() {
         ...(data?.file?.getAll ?? []),
     ] as unknown as FolderUnionFile[];
 
+    useEffect(() => {
+        navigation.setOptions({
+            headerLeft(props) {
+                return (
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate("Settings")}
+                    >
+                        <GravatarImage
+                            email={`${auth.user?.email}`}
+                            size={42}
+                        />
+                    </TouchableOpacity>
+                );
+            },
+        });
+    }, [auth.user?.email, navigation]);
+
     return (
         <View style={{ flex: 1 }}>
-            <Field>
-                <Label>Folder name</Label>
-                <Input onInput={(text) => setName(text)} />
-            </Field>
-            <Button onTap={onCreateFolder}>Create</Button>
+            <View className="flex-row items-center gap-x-6 p-4">
+                <ButtonUpload />
+                <ButtonNew />
+            </View>
             <List
                 data={contents}
                 loading={loading}

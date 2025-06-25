@@ -4,6 +4,8 @@ import { useIsSignedIn, useIsSignedOut } from "./hooks/useAuth";
 import HomePage from "./pages/Home";
 import LoginPage from "./pages/Login";
 import FolderPage from "./pages/Folder";
+import SettingsPage from "./pages/Settings";
+import { MenuProvider } from "react-native-popup-menu";
 
 export type RootStackParamList = {
     Login: undefined;
@@ -12,6 +14,7 @@ export type RootStackParamList = {
         id: string;
         name?: string;
     };
+    Settings: undefined;
 };
 
 const RootStack = createNativeStackNavigator({
@@ -20,6 +23,9 @@ const RootStack = createNativeStackNavigator({
             if: useIsSignedOut,
             screens: {
                 Login: LoginPage,
+            },
+            screenOptions: {
+                title: "",
             },
         },
         LoggedIn: {
@@ -30,6 +36,7 @@ const RootStack = createNativeStackNavigator({
                     options: { title: "" },
                 },
                 Folder: FolderPage,
+                Settings: SettingsPage,
             },
             screenOptions: {
                 animation: "slide_from_right",

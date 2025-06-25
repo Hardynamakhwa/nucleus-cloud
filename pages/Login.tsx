@@ -1,10 +1,11 @@
-import { Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { Field, Input, Label } from "../components/Input";
 import { useState } from "react";
 import { Button } from "../components/Button";
 import api from "../services/axios";
 import { AxiosError } from "axios";
 import store from "../stores";
+import Text from "../components/Text";
 
 export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
@@ -46,9 +47,11 @@ export default function LoginPage() {
     };
 
     return (
-        <View>
-            <Text>Login Page</Text>
-            {err && <Text>{err}</Text>}
+        <ScrollView>
+            <View className="mb-6 p-4">
+                <Text variant="h3">Sign In</Text>
+                {err && <Text>{err}</Text>}
+            </View>
             <Field errors={formStateErr.email}>
                 <Label>Email address</Label>
                 <Input
@@ -70,7 +73,15 @@ export default function LoginPage() {
                     secure
                 />
             </Field>
-            <Button onTap={onLogin}>Sign In</Button>
-        </View>
+            <View className="mb-6 p-4">
+                <Button
+                    onTap={onLogin}
+                    loading={isLoading}
+                    disabled={isLoading}
+                >
+                    Sign In
+                </Button>
+            </View>
+        </ScrollView>
     );
 }

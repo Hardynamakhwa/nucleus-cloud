@@ -30,6 +30,7 @@ export class AuthStore {
             authenticated: computed,
             setup: action,
             login: action,
+            logout: action,
         });
         this.setup();
     }
@@ -69,6 +70,17 @@ export class AuthStore {
             });
         }
     }
+    async logout() {
+        try {
+            await AuthStore.deleteToken();
+            await this.deleteUser();
+        } finally {
+            runInAction(() => {
+                this.token = null;
+                this.user = null;
+            });
+        }
+    }
 
     private async getUser(): Promise<User | null> {
         const userStr = await SecureStore.getItemAsync("user");
@@ -79,6 +91,10 @@ export class AuthStore {
     private async setUser(user: User) {
         const userStr = JSON.stringify(user);
         await SecureStore.setItemAsync("user", userStr);
+    }
+
+    private async deleteUser() {
+        await SecureStore.deleteItemAsync("user");
     }
 
     public static async getToken(): Promise<Token | null> {
@@ -96,5 +112,9 @@ export class AuthStore {
     public static async setToken(token: Token) {
         const tokenStr = JSON.stringify(token);
         await SecureStore.setItemAsync("token", tokenStr);
+    }
+
+    public static async deleteToken() {
+        await SecureStore.deleteItemAsync("token");
     }
 }
