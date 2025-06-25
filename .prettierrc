@@ -2,5 +2,7 @@
   "experimentalOperatorPosition": "start",
   "singleAttributePerLine": true,
   "tabWidth": 4,
-  "experimentalTernaries": true
+  "experimentalTernaries": true,
+  "trailingComma": "es5",
+  "objectWrap": "preserve"
 }

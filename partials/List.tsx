@@ -1,8 +1,10 @@
 import { observer } from "mobx-react-lite";
-import { FlatList, Pressable, RefreshControl, Text, View } from "react-native";
+import { FlatList, Pressable, RefreshControl, View } from "react-native";
 import store from "../stores";
 import { useMemo } from "react";
 import { FileType, FolderType } from "../__generated__/schemas/graphql";
+import Text from "../components/Text";
+import ListItem from "../components/ListItem";
 
 export type FolderUnionFile = FolderType | FileType;
 
@@ -17,16 +19,16 @@ interface ListProps {
 function List(props: ListProps) {
     const renderItem = ({ item }: { item: FolderUnionFile }) => {
         return (
-            <Pressable onPress={() => props.onTap?.(item)}>
-                <Text>{item.name}</Text>
-            </Pressable>
+            <ListItem
+                title={item.name}
+                onTap={() => props.onTap?.(item)}
+                checked={false}
+                onChangeCheck={() => {}}
+            />
         );
     };
 
-    const listKey = useMemo(
-        () => `display-${store.ui.display}`,
-        [store.ui.display]
-    );
+    const listKey = useMemo(() => `display-${store.ui.display}`, []);
 
     return (
         <FlatList

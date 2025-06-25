@@ -35,7 +35,7 @@ const RootStack = createNativeStackNavigator({
     },
     screenOptions: ({ theme }) => ({
         headerTitleStyle: {
-            fontFamily: theme.fonts.medium.fontFamily,
+            fontFamily: "RoobertMedium",
         },
         headerStyle: {
             backgroundColor: theme.colors.background,

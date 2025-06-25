@@ -45,6 +45,9 @@ export default function FolderPage() {
         if (name)
             createFolder({
                 variables: { data: { name, parentId: route.params.id } },
+                onCompleted(data, clientOptions) {
+                    refetch();
+                },
             });
     };
 
@@ -52,7 +55,7 @@ export default function FolderPage() {
         navigation.setOptions({
             title: route.params.name,
         });
-    }, []);
+    }, [navigation, route.params.name]);
 
     const contents = [
         ...(data?.folder?.getAll ?? []),
