@@ -24,15 +24,15 @@ const variants = {
     },
     h4: {
         fontSize: 20 * scale,
-        fontFamily: "RoobertMedium",
+        fontFamily: "MontrealMedium",
     },
     h5: {
         fontSize: 18 * scale,
-        fontFamily: "RoobertRegular",
+        fontFamily: "MontrealRegular",
     },
     h6: {
         fontSize: 16 * scale,
-        fontFamily: "RoobertLight",
+        fontFamily: "MontrealLight",
     },
     body: {
         fontSize: 16 * scale,
