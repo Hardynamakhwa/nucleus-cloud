@@ -7,7 +7,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "graphql-compile": "graphql-codegen"
+    "graphql-compile": "graphql-codegen",
+    "lint": "expo lint"
   },
   "dependencies": {
     "@apollo/client": "^3.13.8",
@@ -15,14 +16,19 @@
     "@react-navigation/native-stack": "^7.3.21",
     "axios": "^1.10.0",
     "expo": "~53.0.12",
+    "expo-crypto": "~14.1.5",
     "expo-secure-store": "~14.2.3",
     "expo-status-bar": "~2.2.3",
+    "expo-system-ui": "~5.0.9",
     "graphql": "^16.11.0",
     "mobx": "^6.13.7",
     "mobx-react-lite": "^4.1.0",
+    "nativewind": "^4.1.23",
     "react": "19.0.0",
     "react-native": "0.79.4",
     "react-native-gesture-handler": "~2.24.0",
+    "react-native-popup-menu": "^0.18.0",
+    "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1"
   },
@@ -33,6 +39,11 @@
     "@graphql-codegen/typescript-operations": "^4.6.1",
     "@graphql-codegen/typescript-react-apollo": "^4.3.3",
     "@types/react": "~19.0.10",
+    "eslint": "^9.29.0",
+    "eslint-config-expo": "~9.2.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.5.0",
+    "prettier": "^3.6.0",
     "typescript": "~5.8.3"
   },
   "private": true

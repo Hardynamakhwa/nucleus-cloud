@@ -33,6 +33,14 @@ const RootStack = createNativeStackNavigator({
             },
         },
     },
+    screenOptions: ({ theme }) => ({
+        headerTitleStyle: {
+            fontFamily: theme.fonts.medium.fontFamily,
+        },
+        headerStyle: {
+            backgroundColor: theme.colors.background,
+        },
+    }),
 });
 
 export const Navigation = createStaticNavigation(RootStack);
