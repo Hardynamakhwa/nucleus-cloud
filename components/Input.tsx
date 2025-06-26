@@ -1,5 +1,11 @@
 import { createContext, PropsWithChildren, useContext } from "react";
-import { TextInput, View, TextInputProps } from "react-native";
+import {
+    TextInput,
+    View,
+    TextInputProps,
+    NativeSyntheticEvent,
+    TextInputChangeEventData,
+} from "react-native";
 import Text from "./Text";
 import { useTheme } from "@react-navigation/native";
 
@@ -8,7 +14,9 @@ const FieldContext = createContext<{ errors?: string[] }>({
 });
 
 export function Input(props: {
+    value?: string;
     onInput?: (text: string) => void;
+    onChange?: (e: NativeSyntheticEvent<TextInputChangeEventData>) => void;
     type?: TextInputProps["keyboardType"];
     secure?: boolean;
 }) {
@@ -17,6 +25,8 @@ export function Input(props: {
     return (
         <View className="my-1">
             <TextInput
+                value={props.value}
+                onChange={props.onChange}
                 onChangeText={props.onInput}
                 style={{
                     borderColor: theme.colors.border,

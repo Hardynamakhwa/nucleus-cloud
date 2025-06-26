@@ -5,10 +5,11 @@ import HomePage from "./pages/Home";
 import LoginPage from "./pages/Login";
 import FolderPage from "./pages/Folder";
 import SettingsPage from "./pages/Settings";
-import { MenuProvider } from "react-native-popup-menu";
+import RegisterPage from "./pages/Register";
 
 export type RootStackParamList = {
     Login: undefined;
+    Register: undefined;
     Home: undefined;
     Folder: {
         id: string;
@@ -23,6 +24,7 @@ const RootStack = createNativeStackNavigator({
             if: useIsSignedOut,
             screens: {
                 Login: LoginPage,
+                Register: RegisterPage,
             },
             screenOptions: {
                 title: "",
