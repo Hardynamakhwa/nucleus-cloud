@@ -6,10 +6,7 @@ import { useEffect, useState } from "react";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../Router";
 import { useNavigation, useTheme } from "@react-navigation/native";
-import {
-    CreateFolderDocument,
-    GetFolderContentsDocument,
-} from "../__generated__/schemas/graphql";
+import { GetFolderContentsDocument } from "../__generated__/schemas/graphql";
 import GravatarImage from "../components/GravatarImage";
 import useAuth from "../hooks/useAuth";
 import ButtonNew from "../partials/ButtonNew";
@@ -25,10 +22,9 @@ export default function HomePage() {
     const { loading, data, refetch, error } = useQuery(
         GetFolderContentsDocument
     );
-    const [createFolder, { data: createFolderData }] =
-        useMutation(CreateFolderDocument);
+
     const [refreshing, setRefreshing] = useState(false);
-    const [name, setName] = useState("");
+    const [selected, setSelected] = useState(new Set<string>());
 
     const onRefresh = () => {
         setRefreshing(true);
@@ -40,10 +36,6 @@ export default function HomePage() {
             id: item.id,
             name: item.name,
         });
-    };
-
-    const onCreateFolder = () => {
-        if (name) createFolder({ variables: { data: { name } } });
     };
 
     const contents = [
@@ -80,6 +72,11 @@ export default function HomePage() {
                 refreshing={refreshing}
                 onTap={onTapHandler}
                 onRefresh={onRefresh}
+                onSelect={(id) =>
+                    setSelected((currentState) =>
+                        currentState.symmetricDifference(new Set([id]))
+                    )
+                }
             />
         </View>
     );

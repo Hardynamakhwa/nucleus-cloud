@@ -6,6 +6,13 @@ import api from "../services/axios";
 import { AxiosError } from "axios";
 import store from "../stores";
 import Text from "../components/Text";
+import { Link } from "@react-navigation/native";
+
+type FastApiError = {
+    loc: string[];
+    msg: string;
+    ctx: {};
+};
 
 export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +32,11 @@ export default function LoginPage() {
             const { data } = await api.post("/token", formState);
             store.auth.login(
                 { email: formState.email },
-                { accessToken: data.access_token, tokenType: data.token_type }
+                {
+                    accessToken: data.access_token,
+                    refreshToken: data.refresh_token,
+                    tokenType: data.token_type,
+                }
             );
         } catch (e) {
             switch (e.status) {
@@ -48,7 +59,7 @@ export default function LoginPage() {
 
     return (
         <ScrollView>
-            <View className="mb-6 p-4">
+            <View className="mb-6 mt-4 p-4">
                 <Text variant="h3">Sign In</Text>
                 {err && <Text>{err}</Text>}
             </View>
@@ -81,6 +92,32 @@ export default function LoginPage() {
                 >
                     Sign In
                 </Button>
+            </View>
+            <View className="flex-col gap-y-4 px-4">
+                <Link
+                    screen="Reset"
+                    params={{}}
+                >
+                    <Text color="primary">Sign in with SSO</Text>
+                </Link>
+                <Text>
+                    Do not have an account?&nbsp;
+                    <Link
+                        screen="Register"
+                        params={{}}
+                    >
+                        <Text color="primary">Register</Text>
+                    </Link>
+                </Text>
+                <Text>
+                    Forgot your password?&nbsp;
+                    <Link
+                        screen="Reset"
+                        params={{}}
+                    >
+                        <Text color="primary">Reset it</Text>
+                    </Link>
+                </Text>
             </View>
         </ScrollView>
     );

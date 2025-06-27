@@ -1,16 +1,11 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import List, { FolderUnionFile } from "../partials/List";
 import { useEffect, useState } from "react";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../Router";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import {
-    CreateFolderDocument,
-    GetFolderContentsDocument,
-} from "../__generated__/schemas/graphql";
+import { GetFolderContentsDocument } from "../__generated__/schemas/graphql";
 import { View } from "react-native";
-import { Field, Label, Input } from "../components/Input";
-import { Button } from "../components/Button";
 import ButtonNew from "../partials/ButtonNew";
 import ButtonUpload from "../partials/ButtonUpload";
 import Text from "../components/Text";
@@ -27,10 +22,9 @@ export default function FolderPage() {
     const { loading, data, refetch } = useQuery(GetFolderContentsDocument, {
         variables: { folderId: route.params.id },
     });
-    const [createFolder, { data: createFolderData }] =
-        useMutation(CreateFolderDocument);
+
     const [refreshing, setRefreshing] = useState(false);
-    const [name, setName] = useState("");
+    const [selected, setSelected] = useState(new Set<string>());
 
     const onRefresh = () => {
         setRefreshing(true);
@@ -42,16 +36,6 @@ export default function FolderPage() {
             id: item.id,
             name: item.name,
         });
-    };
-
-    const onCreateFolder = () => {
-        if (name)
-            createFolder({
-                variables: { data: { name, parentId: route.params.id } },
-                onCompleted(data, clientOptions) {
-                    refetch();
-                },
-            });
     };
 
     useEffect(() => {
@@ -77,6 +61,14 @@ export default function FolderPage() {
                 refreshing={refreshing}
                 onTap={onTapHandler}
                 onRefresh={onRefresh}
+                selection={selected}
+                onSelect={(id: string) =>
+                    setSelected((curr) =>
+                        curr.has(id) ?
+                            new Set([...curr].filter((x) => x !== id))
+                        :   new Set(curr).add(id) && new Set([...curr, id])
+                    )
+                }
                 header={
                     <Text variant="h1">{route.params.name || route.name}</Text>
                 }

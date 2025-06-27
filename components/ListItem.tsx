@@ -1,10 +1,12 @@
 import { View } from "react-native";
-import { RectButton } from "react-native-gesture-handler";
+import { Pressable, RectButton } from "react-native-gesture-handler";
 import Text from "./Text";
 import { ReactElement, ReactNode } from "react";
 // eslint-disable-next-line import/no-named-as-default
 import clsx from "clsx";
 import { useTheme } from "@react-navigation/native";
+import { CheckIcon } from "react-native-heroicons/outline";
+import colors from "tailwindcss/colors";
 
 interface ListItemProps {
     title: string;
@@ -28,7 +30,6 @@ export default function ListItem(
     props: ListItemProps | ListItemPropsWithCheck
 ): ReactElement {
     const theme = useTheme();
-    const checked = (props as ListItemPropsWithCheck).checked ?? false;
 
     return (
         <RectButton
@@ -49,10 +50,32 @@ export default function ListItem(
                     )}
                 >
                     {"checked" in props && (
-                        <View
-                            style={{ borderColor: theme.colors.border }}
-                            className="h-5 w-5 border"
-                        />
+                        <Pressable
+                            onPress={() =>
+                                props.onChangeCheck?.(!props.checked)
+                            }
+                        >
+                            <View
+                                style={{
+                                    borderColor:
+                                        props.checked ?
+                                            theme.colors.primary
+                                        :   theme.colors.border,
+                                    backgroundColor:
+                                        props.checked ?
+                                            theme.colors.primary
+                                        :   undefined,
+                                }}
+                                className="h-5 w-5 items-center justify-center border"
+                            >
+                                {props.checked && (
+                                    <CheckIcon
+                                        size={14}
+                                        color={colors.white}
+                                    />
+                                )}
+                            </View>
+                        </Pressable>
                     )}
                     <View className="flex-col gap-y-2">
                         <Text>{props.title}</Text>

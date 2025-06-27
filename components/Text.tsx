@@ -5,6 +5,7 @@ import { Text as RNText, PixelRatio } from "react-native";
 interface TextProps {
     color?: "primary" | "background" | "secondary" | "error";
     variant?: keyof typeof variants;
+    singleLine?: boolean;
 }
 
 const scale = PixelRatio.getFontScale();
@@ -72,6 +73,7 @@ export default function Text({
                 fontSize: variantStyle.fontSize,
                 fontFamily: variantStyle.fontFamily,
             }}
+            numberOfLines={props.singleLine ? 1 : undefined}
         >
             {children}
         </RNText>

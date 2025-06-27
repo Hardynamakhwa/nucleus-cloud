@@ -33,7 +33,8 @@ export function Input(props: {
                     color: theme.colors.text,
                 }}
                 cursorColor={theme.colors.primary}
-                className="border p-3 text-base focus:border-2"
+                className="border p-2.5 text-base focus:border-2"
+                multiline={false}
                 keyboardType={props.type}
                 secureTextEntry={props.secure}
             />
@@ -57,7 +58,12 @@ export function Field(props: PropsWithChildren<{ errors?: string[] }>) {
 export function Label(props: PropsWithChildren) {
     return (
         <View>
-            <Text variant="h5">{props.children}</Text>
+            <Text
+                variant="h5"
+                singleLine
+            >
+                {props.children}
+            </Text>
         </View>
     );
 }

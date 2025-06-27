@@ -9,6 +9,7 @@ import {
 } from "react-native-popup-menu";
 import { TextThemed } from "../components/Text";
 import { ArrowUpTrayIcon } from "react-native-heroicons/outline";
+import UploadIcon from "../components/icons/UploadIcon";
 
 export default function ButtonUpload() {
     const theme = useTheme();
@@ -21,7 +22,7 @@ export default function ButtonUpload() {
                     style={{ backgroundColor: theme.colors.text }}
                     className="flex-row items-center gap-x-3 rounded-full p-2 px-5"
                 >
-                    <ArrowUpTrayIcon
+                    <UploadIcon
                         size={18}
                         color={theme.colors.background}
                     />

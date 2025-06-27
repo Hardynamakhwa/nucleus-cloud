@@ -22,7 +22,7 @@ export function Button(props: PropsWithChildren<ButtonProps>) {
             enabled={!props.disabled}
         >
             <Animated.View
-                className="flex-row items-center gap-x-4 px-4 py-3"
+                className="flex-row items-center gap-x-4 px-4 py-2.5"
                 style={{
                     backgroundColor: theme.colors.primary,
                     overflow: "hidden",
@@ -35,7 +35,7 @@ export function Button(props: PropsWithChildren<ButtonProps>) {
                         color={colors.white}
                     />
                 )}
-                <Text variant="h5">{props.children}</Text>
+                <Text>{props.children}</Text>
             </Animated.View>
         </RectButton>
     );

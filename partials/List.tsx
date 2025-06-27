@@ -1,7 +1,13 @@
 import { observer } from "mobx-react-lite";
-import { FlatList, RefreshControl, View } from "react-native";
+import {
+    FlatList,
+    Pressable,
+    RefreshControl,
+    TextInput,
+    View,
+} from "react-native";
 import store from "../stores";
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import { FileType, FolderType } from "../__generated__/schemas/graphql";
 import ListItem from "../components/ListItem";
 import {
@@ -10,10 +16,15 @@ import {
     MenuOptions,
     MenuTrigger,
 } from "react-native-popup-menu";
-import Text, { TextThemed } from "../components/Text";
+import { TextThemed } from "../components/Text";
 import { useTheme } from "@react-navigation/native";
 import { RectButton } from "react-native-gesture-handler";
-import { Bars2Icon, FolderIcon } from "react-native-heroicons/outline";
+import {
+    Bars2Icon,
+    FolderIcon,
+    XMarkIcon,
+} from "react-native-heroicons/outline";
+import Animated, { SlideInUp, SlideOutUp } from "react-native-reanimated";
 
 export type FolderUnionFile = FolderType | FileType;
 
@@ -22,6 +33,9 @@ interface ListProps {
     loading?: boolean;
     refreshing?: boolean;
     onRefresh?(): void;
+    isInserting?: boolean;
+    selection?: Set<string>;
+    onSelect?(item: string): void;
     onTap?(item: FolderUnionFile): void;
     header?: ReactNode;
 }
@@ -41,8 +55,8 @@ function List(props: ListProps) {
                     :   undefined
                 }
                 onTap={() => props.onTap?.(item)}
-                checked={false}
-                onChangeCheck={() => {}}
+                checked={props.selection?.has(item.id)}
+                onChangeCheck={() => props.onSelect?.(item.id)}
             />
         );
     };
@@ -154,10 +168,43 @@ function List(props: ListProps) {
                                 </MenuOptions>
                             </Menu>
                         </View>
+                        <View className="overflow-hidden">
+                            {props.isInserting && <NewItemField />}
+                        </View>
                     </View>
                 </View>
             }
         />
+    );
+}
+
+function NewItemField() {
+    const theme = useTheme();
+    const [state, setState] = useState("");
+    return (
+        <Animated.View
+            entering={SlideInUp}
+            exiting={SlideOutUp}
+            className="flex-row items-center gap-x-4"
+        >
+            <TextInput
+                autoFocus
+                value={state}
+                onChangeText={(text) => setState(text)}
+                style={{
+                    color: theme.colors.text,
+                    fontFamily: theme.fonts.medium.fontFamily,
+                }}
+                className="focus:boder-2 flex-1 border p-2 text-base focus:border-indigo-500"
+                multiline={false}
+            />
+            <Pressable>
+                <XMarkIcon
+                    size={24}
+                    color={theme.colors.text}
+                />
+            </Pressable>
+        </Animated.View>
     );
 }
 
