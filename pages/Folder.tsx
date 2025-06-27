@@ -62,11 +62,9 @@ export default function FolderPage() {
                 onTap={onTapHandler}
                 onRefresh={onRefresh}
                 selection={selected}
-                onSelect={(id: string) =>
+                onSelect={(id) =>
                     setSelected((curr) =>
-                        curr.has(id) ?
-                            new Set([...curr].filter((x) => x !== id))
-                        :   new Set(curr).add(id) && new Set([...curr, id])
+                        curr.symmetricDifference(new Set([id]))
                     )
                 }
                 header={
