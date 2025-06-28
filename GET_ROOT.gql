@@ -1,0 +1,23 @@
+query GetRoot {
+    file {
+        getAll {
+            id
+            name
+            file
+            mimeType
+            ext
+            size
+            starred
+            createdAt
+            updatedAt
+        }
+    }
+    folder {
+        getAll {
+            id
+            name
+            createdAt
+            updatedAt
+        }
+    }
+}

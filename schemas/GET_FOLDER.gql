@@ -1,19 +1,19 @@
-mutation CreateFolder($name: String!, $parentId: UUID) {
+query GetFolder($id: UUID!) {
     folder {
-        create(input: { name: $name, parentId: $parentId }) {
-            id
+        get(id: $id) {
             name
+            id
             createdAt
             updatedAt
             files {
                 id
                 name
+                file
+                ext
                 mimeType
                 size
-                ext
-                file
-                createdAt
                 starred
+                createdAt
                 updatedAt
             }
             folders {
