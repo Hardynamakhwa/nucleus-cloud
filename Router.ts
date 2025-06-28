@@ -6,7 +6,8 @@ import LoginPage from "./pages/Login";
 import FolderPage from "./pages/Folder";
 import SettingsPage from "./pages/Settings";
 import RegisterPage from "./pages/Register";
-
+import AppLogo from "./partials/AppLogo";
+import { PixelRatio } from "react-native";
 export type RootStackParamList = {
     Login: undefined;
     Register: undefined;
@@ -27,7 +28,13 @@ const RootStack = createNativeStackNavigator({
                 Register: RegisterPage,
             },
             screenOptions: {
-                title: "",
+                title: "Nucleus cloud",
+                headerTitleStyle: {
+                    fontFamily: "RoobertBold",
+                    fontSize: 26 * PixelRatio.getFontScale(),
+                },
+                headerLeft: AppLogo,
+                animation: "slide_from_right",
             },
         },
         LoggedIn: {
