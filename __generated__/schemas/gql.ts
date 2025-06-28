@@ -17,11 +17,13 @@ type Documents = {
     "mutation CreateFolder($name: String!, $parentId: UUID) {\n  folder {\n    create(input: {name: $name, parentId: $parentId}) {\n      id\n      name\n      createdAt\n      updatedAt\n      files {\n        id\n        name\n        mimeType\n        size\n        ext\n        file\n        createdAt\n        starred\n        updatedAt\n      }\n      folders {\n        id\n        name\n        createdAt\n        updatedAt\n      }\n    }\n  }\n}": typeof types.CreateFolderDocument,
     "mutation DeleteFolder($id: UUID!) {\n  folder {\n    delete(id: $id) {\n      success\n      message\n    }\n  }\n}": typeof types.DeleteFolderDocument,
     "query GetFolder($id: UUID!) {\n  folder {\n    get(id: $id) {\n      name\n      id\n      createdAt\n      updatedAt\n      files {\n        id\n        name\n        file\n        ext\n        mimeType\n        size\n        starred\n        createdAt\n        updatedAt\n      }\n      folders {\n        id\n        name\n        createdAt\n        updatedAt\n      }\n    }\n  }\n}": typeof types.GetFolderDocument,
+    "mutation UpdateFolder($id: UUID!, $data: FolderUpdateInput!) {\n  folder {\n    update(id: $id, input: $data) {\n      id\n      name\n      updatedAt\n      createdAt\n    }\n  }\n}": typeof types.UpdateFolderDocument,
 };
 const documents: Documents = {
     "mutation CreateFolder($name: String!, $parentId: UUID) {\n  folder {\n    create(input: {name: $name, parentId: $parentId}) {\n      id\n      name\n      createdAt\n      updatedAt\n      files {\n        id\n        name\n        mimeType\n        size\n        ext\n        file\n        createdAt\n        starred\n        updatedAt\n      }\n      folders {\n        id\n        name\n        createdAt\n        updatedAt\n      }\n    }\n  }\n}": types.CreateFolderDocument,
     "mutation DeleteFolder($id: UUID!) {\n  folder {\n    delete(id: $id) {\n      success\n      message\n    }\n  }\n}": types.DeleteFolderDocument,
     "query GetFolder($id: UUID!) {\n  folder {\n    get(id: $id) {\n      name\n      id\n      createdAt\n      updatedAt\n      files {\n        id\n        name\n        file\n        ext\n        mimeType\n        size\n        starred\n        createdAt\n        updatedAt\n      }\n      folders {\n        id\n        name\n        createdAt\n        updatedAt\n      }\n    }\n  }\n}": types.GetFolderDocument,
+    "mutation UpdateFolder($id: UUID!, $data: FolderUpdateInput!) {\n  folder {\n    update(id: $id, input: $data) {\n      id\n      name\n      updatedAt\n      createdAt\n    }\n  }\n}": types.UpdateFolderDocument,
 };
 
 /**
@@ -50,6 +52,10 @@ export function graphql(source: "mutation DeleteFolder($id: UUID!) {\n  folder {
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "query GetFolder($id: UUID!) {\n  folder {\n    get(id: $id) {\n      name\n      id\n      createdAt\n      updatedAt\n      files {\n        id\n        name\n        file\n        ext\n        mimeType\n        size\n        starred\n        createdAt\n        updatedAt\n      }\n      folders {\n        id\n        name\n        createdAt\n        updatedAt\n      }\n    }\n  }\n}"): (typeof documents)["query GetFolder($id: UUID!) {\n  folder {\n    get(id: $id) {\n      name\n      id\n      createdAt\n      updatedAt\n      files {\n        id\n        name\n        file\n        ext\n        mimeType\n        size\n        starred\n        createdAt\n        updatedAt\n      }\n      folders {\n        id\n        name\n        createdAt\n        updatedAt\n      }\n    }\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "mutation UpdateFolder($id: UUID!, $data: FolderUpdateInput!) {\n  folder {\n    update(id: $id, input: $data) {\n      id\n      name\n      updatedAt\n      createdAt\n    }\n  }\n}"): (typeof documents)["mutation UpdateFolder($id: UUID!, $data: FolderUpdateInput!) {\n  folder {\n    update(id: $id, input: $data) {\n      id\n      name\n      updatedAt\n      createdAt\n    }\n  }\n}"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

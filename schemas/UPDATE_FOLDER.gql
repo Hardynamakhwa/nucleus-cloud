@@ -1,0 +1,10 @@
+mutation UpdateFolder($id: UUID!, $data: FolderUpdateInput!) {
+    folder {
+        update(id: $id, input: $data) {
+            id
+            name
+            updatedAt
+            createdAt
+        }
+    }
+}
