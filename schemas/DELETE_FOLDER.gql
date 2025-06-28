@@ -1,0 +1,8 @@
+mutation DeleteFolder($id: UUID!){
+  folder {
+    delete(id: $id) {
+      success
+      message
+    }
+  }
+}
