@@ -4,9 +4,7 @@ import Text from "./Text";
 import { ReactElement, ReactNode } from "react";
 // eslint-disable-next-line import/no-named-as-default
 import clsx from "clsx";
-import { useTheme } from "@react-navigation/native";
-import { CheckIcon } from "react-native-heroicons/outline";
-import colors from "tailwindcss/colors";
+import Checkbox from "./Checkbox";
 
 interface ListItemProps {
     title: string;
@@ -29,8 +27,6 @@ export default function ListItem(props: ListItemPropsWithCheck): ReactElement;
 export default function ListItem(
     props: ListItemProps | ListItemPropsWithCheck
 ): ReactElement {
-    const theme = useTheme();
-
     return (
         <RectButton
             onPress={props.onTap}
@@ -38,30 +34,10 @@ export default function ListItem(
         >
             <View className={clsx("flex-row items-center gap-x-4 px-2 pl-4")}>
                 {"checked" in props && (
-                    <Pressable
-                        onPress={() => props.onChangeCheck?.(!props.checked)}
-                    >
-                        <View
-                            style={{
-                                borderColor:
-                                    props.checked ?
-                                        theme.colors.primary
-                                    :   theme.colors.border,
-                                backgroundColor:
-                                    props.checked ?
-                                        theme.colors.primary
-                                    :   undefined,
-                            }}
-                            className="h-5 w-5 items-center justify-center border"
-                        >
-                            {props.checked && (
-                                <CheckIcon
-                                    size={14}
-                                    color={colors.white}
-                                />
-                            )}
-                        </View>
-                    </Pressable>
+                    <Checkbox
+                        checked={props.checked}
+                        onChange={(value) => props.onChangeCheck?.(value)}
+                    />
                 )}
                 <View
                     className={clsx(
