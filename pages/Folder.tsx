@@ -7,11 +7,13 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import {
     CreateFolderDocument,
     GetFolderDocument,
+    UpdateFolderDocument,
 } from "../__generated__/schemas/graphql";
 import { View } from "react-native";
 import ButtonNew from "../partials/ButtonNew";
 import ButtonUpload from "../partials/ButtonUpload";
 import Text from "../components/Text";
+import { name } from "eslint-plugin-prettier/recommended";
 
 type FolderRouteProp = RouteProp<RootStackParamList, "Folder">;
 type FolderNavigationProp = NativeStackNavigationProp<
@@ -71,6 +73,25 @@ export default function FolderPage() {
                             ],
                         },
                     },
+                },
+            });
+        },
+    });
+
+    const [updateFolder] = useMutation(UpdateFolderDocument, {
+        update(cache, { data }) {
+            const updated = data?.folder.update;
+            if (!updated) return;
+
+            cache.modify({
+                id: cache.identify({
+                    __typename: "FolderType",
+                    id: updated.id,
+                }),
+                fields: {
+                    name: () => updated.name,
+                    updatedAt: () => updated.updatedAt,
+                    createdAt: () => updated.createdAt,
                 },
             });
         },

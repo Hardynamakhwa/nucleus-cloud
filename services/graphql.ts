@@ -1,13 +1,14 @@
 import {
     ApolloClient,
     ApolloLink,
-    concat,
     from,
+    fromPromise,
     HttpLink,
     InMemoryCache,
 } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
 import { AuthStore } from "../stores/auth";
+import api from "./axios";
 
 const httpLink = new HttpLink({
     uri: "http://localhost:8000/graphql",
@@ -24,18 +25,49 @@ const authLink = new ApolloLink((operation, forward) => {
     return forward(operation);
 });
 
-const errorLink = onError(({ graphQLErrors, networkError }) => {
-    const isNetwork401 =
-        networkError
-        && "statusCode" in networkError
-        && networkError.statusCode === 401;
-    const isGraphQLError401 = graphQLErrors?.some(
+const errorLink = onError(({ graphQLErrors, forward, operation }) => {
+    const unauthenticated = graphQLErrors?.some(
         (error) => error.extensions?.code === "UNAUTHENTICATED"
     );
-    if (isNetwork401 || isGraphQLError401) {
-        // return new Promise((resolve, reject) => {});
-        console.log("Unauthorized access detected. Redirecting to login...");
+    if (unauthenticated) {
+        return fromPromise(
+            (async () => {
+                const tokenData = await AuthStore.getToken();
+                const refreshToken = tokenData?.refreshToken;
+
+                if (!refreshToken) return null;
+
+                try {
+                    const { data } = await api.post("/refresh", {
+                        refresh_token: refreshToken,
+                    });
+
+                    if (!data?.refresh_token) return null;
+
+                    await AuthStore.setToken({
+                        accessToken: data.access_token,
+                        refreshToken: data.refresh_token,
+                        tokenType: data.token_type,
+                    });
+                    return data.access_token;
+                } catch {
+                    return null;
+                }
+            })()
+        )
+            .filter((token) => Boolean(token))
+            .flatMap((token) => {
+                const oldHeaders = operation.getContext().headers;
+                operation.setContext({
+                    headers: {
+                        ...oldHeaders,
+                        authorization: `Bearer ${token}`,
+                    },
+                });
+                return forward(operation);
+            });
     }
+    return forward(operation);
 });
 
 const client = new ApolloClient({
