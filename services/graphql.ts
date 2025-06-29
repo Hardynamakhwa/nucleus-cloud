@@ -67,7 +67,6 @@ const errorLink = onError(({ graphQLErrors, forward, operation }) => {
                 return forward(operation);
             });
     }
-    return forward(operation);
 });
 
 const client = new ApolloClient({
