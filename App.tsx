@@ -13,6 +13,7 @@ import store from "./stores";
 import { colorScheme } from "./stores/ui";
 import { darkTheme, lightTheme } from "./themes/schemes";
 import * as SplashScreen from "expo-splash-screen";
+import { setBackgroundColorAsync } from "expo-system-ui";
 
 SplashScreen.preventAutoHideAsync();
 function App() {
@@ -52,6 +53,13 @@ function App() {
         () => (prefersDark ? darkTheme : lightTheme),
         [prefersDark]
     );
+
+    useEffect(() => {
+        const bootstrap = async () => {
+            setBackgroundColorAsync(theme.colors.background);
+        };
+        bootstrap();
+    }, [theme.colors.background]);
 
     const onLayoutRootView = useCallback(() => {
         if (appIsReady) {
