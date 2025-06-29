@@ -25,6 +25,7 @@ import {
     XMarkIcon,
 } from "react-native-heroicons/outline";
 import Animated, { SlideInUp, SlideOutUp } from "react-native-reanimated";
+import ListSelectionOptions from "./ListSelectionOptions";
 
 export type FolderUnionFile = FolderType | FileType;
 
@@ -37,6 +38,7 @@ interface ListProps {
     selection?: Set<string>;
     onSelect?(item: string): void;
     onTap?(item: FolderUnionFile): void;
+    onSelectionOption?(option: any): void;
     header?: ReactNode;
 }
 
@@ -62,6 +64,20 @@ function List(props: ListProps) {
     };
 
     const listKey = useMemo(() => `display-${store.ui.display}`, []);
+    const selectionOptionsTitle = useMemo(() => {
+        return (
+            props.selection?.size ?
+                props.selection.size > 1 ?
+                    `${props.selection.size} selected items`
+                :   `${
+                        props.data.filter(
+                            ({ id }) =>
+                                id === props.selection?.values().next().value
+                        )?.[0]?.name
+                    }`
+            :   ""
+        );
+    }, [props.data, props.selection]);
 
     return (
         <FlatList
@@ -80,6 +96,14 @@ function List(props: ListProps) {
                 <View className="flex-col gap-y-2">
                     {props.header && (
                         <View className="p-4">{props.header}</View>
+                    )}
+                    {!!props.selection?.size && (
+                        <ListSelectionOptions
+                            title={selectionOptionsTitle}
+                            onOptionSelect={(option) => {
+                                props.onSelectionOption?.(option);
+                            }}
+                        />
                     )}
                     <View className="mb-4 flex-row items-center justify-between px-4">
                         <View className="flex-row items-center gap-x-3">

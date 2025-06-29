@@ -1,3 +1,4 @@
+import symmetricDifference from "set.prototype.symmetricdifference";
 import { useMutation, useQuery } from "@apollo/client";
 import List, { FolderUnionFile } from "../partials/List";
 import { useEffect, useState } from "react";
@@ -6,6 +7,7 @@ import { RootStackParamList } from "../Router";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import {
     CreateFolderDocument,
+    DeleteFolderDocument,
     GetFolderDocument,
     UpdateFolderDocument,
 } from "../__generated__/schemas/graphql";
@@ -14,6 +16,7 @@ import ButtonNew from "../partials/ButtonNew";
 import ButtonUpload from "../partials/ButtonUpload";
 import Text from "../components/Text";
 import { name } from "eslint-plugin-prettier/recommended";
+import useBackHandler from "../hooks/useBackHandler";
 
 type FolderRouteProp = RouteProp<RootStackParamList, "Folder">;
 type FolderNavigationProp = NativeStackNavigationProp<
@@ -97,6 +100,51 @@ export default function FolderPage() {
         },
     });
 
+    const [deleteFolder] = useMutation(DeleteFolderDocument, {
+        optimisticResponse() {
+            return {
+                __typename: typename("Mutation"),
+                folder: {
+                    __typename: typename("FolderMutations"),
+                    delete: {
+                        __typename: typename("DeleteResponse"),
+                        success: true,
+                        message: "deleted successfully",
+                    },
+                },
+            };
+        },
+        update(cache, { data }, { variables }) {
+            const deleteSuccess = data?.folder.delete.success;
+            if (!deleteSuccess) return;
+
+            const existing = cache.readQuery({
+                query: GetFolderDocument,
+                variables: {
+                    id: route.params.id,
+                },
+            });
+
+            cache.writeQuery({
+                query: GetFolderDocument,
+                variables: {
+                    id: route.params.id,
+                },
+                data: {
+                    folder: {
+                        get: {
+                            ...existing?.folder.get!,
+                            folders:
+                                existing?.folder.get?.folders.filter(
+                                    ({ id }) => id !== variables?.id
+                                ) ?? [],
+                        },
+                    },
+                },
+            });
+        },
+    });
+
     const [refreshing, setRefreshing] = useState(false);
     const [selected, setSelected] = useState(new Set<string>());
 
@@ -112,11 +160,37 @@ export default function FolderPage() {
         });
     };
 
+    const onSelectionOptionHandler = (option: any) => {
+        switch (option) {
+            case "delete":
+                selected.forEach((id) => {
+                    setSelected((curr) => {
+                        const newSet = new Set(curr);
+                        newSet.delete(id);
+                        return newSet;
+                    });
+                    deleteFolder({
+                        variables: {
+                            id,
+                        },
+                        onError() {
+                            setSelected((curr) => new Set([...curr, id]));
+                        },
+                    });
+                });
+                break;
+        }
+    };
+
     useEffect(() => {
         navigation.setOptions({
             title: route.params.name,
         });
     }, [navigation, route.params.name]);
+
+    useBackHandler(Boolean(selected?.size), () => {
+        setSelected(new Set());
+    });
 
     const contents = [
         ...(data?.folder.get?.folders ?? []),
@@ -138,9 +212,10 @@ export default function FolderPage() {
                 selection={selected}
                 onSelect={(id) =>
                     setSelected((curr) =>
-                        curr.symmetricDifference(new Set([id]))
+                        symmetricDifference(curr, new Set([id]))
                     )
                 }
+                onSelectionOption={onSelectionOptionHandler}
                 header={
                     <Text variant="h1">{route.params.name || route.name}</Text>
                 }

@@ -36,47 +36,47 @@ export default function ListItem(
             onPress={props.onTap}
             enabled={!props.disabled}
         >
-            <View className={clsx("flex-row items-center gap-x-4 px-4")}>
-                {"leading" in props && <View>{props.leading}</View>}
+            <View className={clsx("flex-row items-center gap-x-4 px-2 pl-4")}>
+                {"checked" in props && (
+                    <Pressable
+                        onPress={() => props.onChangeCheck?.(!props.checked)}
+                    >
+                        <View
+                            style={{
+                                borderColor:
+                                    props.checked ?
+                                        theme.colors.primary
+                                    :   theme.colors.border,
+                                backgroundColor:
+                                    props.checked ?
+                                        theme.colors.primary
+                                    :   undefined,
+                            }}
+                            className="h-5 w-5 items-center justify-center border"
+                        >
+                            {props.checked && (
+                                <CheckIcon
+                                    size={14}
+                                    color={colors.white}
+                                />
+                            )}
+                        </View>
+                    </Pressable>
+                )}
                 <View
-                    style={{ borderColor: theme.colors.border }}
                     className={clsx(
-                        "flex-1 flex-row items-center gap-x-4 border-b",
+                        "flex-1 flex-row items-center gap-x-4 border-b border-l-2 px-2",
                         {
                             "py-3": !props.compact,
                             "py-1.5": props.compact,
                             "border-t": props.isFirst,
-                        }
+                        },
+                        (props as ListItemPropsWithCheck).checked ?
+                            "border-b-transparent border-l-indigo-500 bg-indigo-500/50"
+                        :   "border-b-neutral-800 border-l-transparent"
                     )}
                 >
-                    {"checked" in props && (
-                        <Pressable
-                            onPress={() =>
-                                props.onChangeCheck?.(!props.checked)
-                            }
-                        >
-                            <View
-                                style={{
-                                    borderColor:
-                                        props.checked ?
-                                            theme.colors.primary
-                                        :   theme.colors.border,
-                                    backgroundColor:
-                                        props.checked ?
-                                            theme.colors.primary
-                                        :   undefined,
-                                }}
-                                className="h-5 w-5 items-center justify-center border"
-                            >
-                                {props.checked && (
-                                    <CheckIcon
-                                        size={14}
-                                        color={colors.white}
-                                    />
-                                )}
-                            </View>
-                        </Pressable>
-                    )}
+                    {"leading" in props && <View>{props.leading}</View>}
                     <View className="flex-col gap-y-2">
                         <Text>{props.title}</Text>
                         {"subtitle" in props && !props.compact && (
