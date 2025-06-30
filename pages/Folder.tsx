@@ -15,7 +15,6 @@ import { View } from "react-native";
 import ButtonNew from "../partials/ButtonNew";
 import ButtonUpload from "../partials/ButtonUpload";
 import Text from "../components/Text";
-import { name } from "eslint-plugin-prettier/recommended";
 import useBackHandler from "../hooks/useBackHandler";
 
 type FolderRouteProp = RouteProp<RootStackParamList, "Folder">;
@@ -25,9 +24,13 @@ type FolderNavigationProp = NativeStackNavigationProp<
 >;
 const typename = <T extends string>(name: T): T => name;
 
+
 export default function FolderPage() {
     const route = useRoute<FolderRouteProp>();
     const navigation = useNavigation<FolderNavigationProp>();
+
+    const [editing, setEditing] = useState("");
+
     const { loading, data, refetch } = useQuery(GetFolderDocument, {
         variables: { id: route.params.id },
     });

@@ -19,12 +19,7 @@ import {
 import { TextThemed } from "../components/Text";
 import { useTheme } from "@react-navigation/native";
 import { RectButton } from "react-native-gesture-handler";
-import {
-    Bars2Icon,
-    FolderIcon,
-    XMarkIcon,
-} from "react-native-heroicons/outline";
-import Animated, { SlideInUp, SlideOutUp } from "react-native-reanimated";
+import { Bars2Icon, FolderIcon } from "react-native-heroicons/outline";
 import ListSelectionOptions from "./ListSelectionOptions";
 
 export type FolderUnionFile = FolderType | FileType;
@@ -40,10 +35,14 @@ interface ListProps {
     onTap?(item: FolderUnionFile): void;
     onSelectionOption?(option: any): void;
     header?: ReactNode;
+    editing?: string;
+    onRequestStopEditing?(): void;
+    onSubmitEditing?(value: string): void;
 }
 
 function List(props: ListProps) {
     const theme = useTheme();
+
     const renderItem = ({ item }: { item: FolderUnionFile }) => {
         return (
             <ListItem
@@ -56,6 +55,9 @@ function List(props: ListProps) {
                         />
                     :   undefined
                 }
+                editing={props.editing === item.id}
+                onSubmitEditing={props.onSubmitEditing}
+                onRequestStopEditing={props.onRequestStopEditing}
                 onTap={() => props.onTap?.(item)}
                 checked={props.selection?.has(item.id)}
                 onChangeCheck={() => props.onSelect?.(item.id)}
@@ -199,36 +201,6 @@ function List(props: ListProps) {
                 </View>
             }
         />
-    );
-}
-
-function NewItemField() {
-    const theme = useTheme();
-    const [state, setState] = useState("");
-    return (
-        <Animated.View
-            entering={SlideInUp}
-            exiting={SlideOutUp}
-            className="flex-row items-center gap-x-4"
-        >
-            <TextInput
-                autoFocus
-                value={state}
-                onChangeText={(text) => setState(text)}
-                style={{
-                    color: theme.colors.text,
-                    fontFamily: theme.fonts.medium.fontFamily,
-                }}
-                className="focus:boder-2 flex-1 border p-2 text-base focus:border-indigo-500"
-                multiline={false}
-            />
-            <Pressable>
-                <XMarkIcon
-                    size={24}
-                    color={theme.colors.text}
-                />
-            </Pressable>
-        </Animated.View>
     );
 }
 
