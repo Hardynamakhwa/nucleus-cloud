@@ -28,12 +28,11 @@ const RootStack = createNativeStackNavigator({
                 Register: RegisterPage,
             },
             screenOptions: {
-                title: "Nucleus cloud",
+                title: "",
                 headerTitleStyle: {
                     fontFamily: "RoobertBold",
                     fontSize: 26 * PixelRatio.getFontScale(),
                 },
-                headerLeft: AppLogo,
                 animation: "slide_from_right",
             },
         },
