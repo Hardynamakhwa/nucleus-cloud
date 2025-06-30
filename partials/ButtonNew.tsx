@@ -21,10 +21,7 @@ export default function ButtonNew() {
         <Menu>
             <MenuTrigger>
                 <RectButton>
-                    <View
-                        style={{ borderColor: theme.colors.text }}
-                        className="flex-row items-center gap-x-3 rounded-full border p-2 px-5"
-                    >
+                    <View className="flex-row items-center gap-x-3 rounded-full border border-text p-2 px-5">
                         <PlusIcon
                             size={18}
                             color={theme.colors.text}
