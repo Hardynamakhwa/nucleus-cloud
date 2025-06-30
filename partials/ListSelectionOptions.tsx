@@ -7,8 +7,6 @@ import {
     ChevronRightIcon,
     EllipsisHorizontalIcon,
     InformationCircleIcon,
-    LinkIcon,
-    PencilIcon,
     PencilSquareIcon,
     ScissorsIcon,
     Square2StackIcon,
@@ -21,7 +19,6 @@ import {
     MenuOption,
     MenuOptions,
     MenuTrigger,
-    renderers,
 } from "react-native-popup-menu";
 import Animated, {
     FadeOutUp,

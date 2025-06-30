@@ -194,9 +194,9 @@ function List(props: ListProps) {
                                 </MenuOptions>
                             </Menu>
                         </View>
-                        <View className="overflow-hidden">
+                        {/* <View className="overflow-hidden">
                             {props.isInserting && <NewItemField />}
-                        </View>
+                        </View> */}
                     </View>
                 </View>
             }

@@ -1,3 +1,4 @@
+import "./services/folder.effects";
 import { ApolloProvider } from "@apollo/client";
 import * as Font from "expo-font";
 import { observer } from "mobx-react-lite";

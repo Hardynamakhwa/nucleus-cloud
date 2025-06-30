@@ -1,3 +1,4 @@
+//@ts-expect-error
 import symmetricDifference from "set.prototype.symmetricdifference";
 import { useMutation, useQuery } from "@apollo/client";
 import List, { FolderUnionFile } from "../partials/List";
@@ -16,14 +17,19 @@ import ButtonNew from "../partials/ButtonNew";
 import ButtonUpload from "../partials/ButtonUpload";
 import Text from "../components/Text";
 import useBackHandler from "../hooks/useBackHandler";
+import { Subject } from "rxjs";
 
 type FolderRouteProp = RouteProp<RootStackParamList, "Folder">;
 type FolderNavigationProp = NativeStackNavigationProp<
     RootStackParamList,
     "Folder"
 >;
-const typename = <T extends string>(name: T): T => name;
 
+const folderSubject = new Subject<{
+    isEditing: string;
+}>();
+
+const typename = <T extends string>(name: T): T => name;
 
 export default function FolderPage() {
     const route = useRoute<FolderRouteProp>();
