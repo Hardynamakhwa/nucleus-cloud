@@ -1,6 +1,5 @@
 import { View } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
-import { EllipsisHorizontalIcon } from "react-native-heroicons/outline";
 import {
     Menu,
     MenuOption,
@@ -9,11 +8,10 @@ import {
 } from "react-native-popup-menu";
 import { TextThemed } from "./Text";
 import { useTheme } from "@react-navigation/native";
-import { ElementType, ReactNode } from "react";
+import { ElementType, PropsWithChildren } from "react";
 
 interface PopupMenuProps {
     title?: string;
-    triggerComponent?: ReactNode;
     onOptionSelect?: (value: string) => void;
     items: {
         label: string;
@@ -22,7 +20,7 @@ interface PopupMenuProps {
     }[];
 }
 
-export default function PopupMenu(props: PopupMenuProps) {
+export default function PopupMenu(props: PropsWithChildren<PopupMenuProps>) {
     const theme = useTheme();
     return (
         <Menu onSelect={(value) => props.onOptionSelect?.(value)}>
@@ -31,12 +29,7 @@ export default function PopupMenu(props: PopupMenuProps) {
                     TriggerTouchableComponent: RectButton,
                 }}
             >
-                <View className="p-2">
-                    <EllipsisHorizontalIcon
-                        size={24}
-                        color={theme.colors.text}
-                    />
-                </View>
+                {props.children}
             </MenuTrigger>
             <MenuOptions
                 customStyles={{

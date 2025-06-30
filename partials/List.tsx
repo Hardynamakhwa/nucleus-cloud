@@ -1,26 +1,23 @@
 import { observer } from "mobx-react-lite";
 import {
     FlatList,
-    Pressable,
     RefreshControl,
     TextInput,
+    TouchableOpacity,
     View,
 } from "react-native";
 import store from "../stores";
 import { ReactNode, useMemo, useState } from "react";
 import { FileType, FolderType } from "../__generated__/schemas/graphql";
 import ListItem from "../components/ListItem";
-import {
-    Menu,
-    MenuOption,
-    MenuOptions,
-    MenuTrigger,
-} from "react-native-popup-menu";
 import { TextThemed } from "../components/Text";
 import { useTheme } from "@react-navigation/native";
-import { RectButton } from "react-native-gesture-handler";
-import { Bars2Icon, FolderIcon } from "react-native-heroicons/outline";
-import ListSelectionOptions from "./ListSelectionOptions";
+import {
+    Bars2Icon,
+    FolderIcon,
+    XMarkIcon,
+} from "react-native-heroicons/outline";
+import PopupMenu from "../components/PopupMenu";
 
 export type FolderUnionFile = FolderType | FileType;
 
@@ -29,7 +26,7 @@ interface ListProps {
     loading?: boolean;
     refreshing?: boolean;
     onRefresh?(): void;
-    isInserting?: boolean;
+    newEntryInputShown?: boolean;
     selection?: Set<string>;
     onSelect?(item: string): void;
     onTap?(item: FolderUnionFile): void;
@@ -66,20 +63,6 @@ function List(props: ListProps) {
     };
 
     const listKey = useMemo(() => `display-${store.ui.display}`, []);
-    const selectionOptionsTitle = useMemo(() => {
-        return (
-            props.selection?.size ?
-                props.selection.size > 1 ?
-                    `${props.selection.size} selected items`
-                :   `${
-                        props.data.filter(
-                            ({ id }) =>
-                                id === props.selection?.values().next().value
-                        )?.[0]?.name
-                    }`
-            :   ""
-        );
-    }, [props.data, props.selection]);
 
     return (
         <FlatList
@@ -99,104 +82,45 @@ function List(props: ListProps) {
                     {props.header && (
                         <View className="p-4">{props.header}</View>
                     )}
-                    {!!props.selection?.size && (
-                        <ListSelectionOptions
-                            title={selectionOptionsTitle}
-                            onOptionSelect={(option) => {
-                                props.onSelectionOption?.(option);
-                            }}
-                        />
-                    )}
                     <View className="mb-4 flex-row items-center justify-between px-4">
                         <View className="flex-row items-center gap-x-3">
                             <View
                                 style={{ borderColor: theme.colors.border }}
                                 className="h-5 w-5 border"
                             />
-                            <Menu>
-                                <MenuTrigger>
-                                    <TextThemed theme={theme}>Name</TextThemed>
-                                </MenuTrigger>
-                                <MenuOptions
-                                    customStyles={{
-                                        optionsContainer: {
-                                            backgroundColor: theme.colors.card,
-                                        },
-                                        optionWrapper: {
-                                            padding: 16,
-                                            paddingVertical: 10,
-                                        },
-                                        OptionTouchableComponent: RectButton,
-                                    }}
-                                >
-                                    <MenuOption>
-                                        <TextThemed theme={theme}>
-                                            Name
-                                        </TextThemed>
-                                    </MenuOption>
-                                    <MenuOption>
-                                        <TextThemed theme={theme}>
-                                            Date created
-                                        </TextThemed>
-                                    </MenuOption>
-                                    <MenuOption>
-                                        <TextThemed theme={theme}>
-                                            Type
-                                        </TextThemed>
-                                    </MenuOption>
-                                    <MenuOption>
-                                        <TextThemed theme={theme}>
-                                            Size
-                                        </TextThemed>
-                                    </MenuOption>
-                                </MenuOptions>
-                            </Menu>
+                            <TextThemed theme={theme}>Name</TextThemed>
                         </View>
                         <View>
-                            <Menu>
-                                <MenuTrigger
-                                    customStyles={{
-                                        TriggerTouchableComponent: RectButton,
-                                    }}
-                                >
-                                    <Bars2Icon
-                                        size={24}
-                                        color={theme.colors.text}
-                                    />
-                                </MenuTrigger>
-                                <MenuOptions
-                                    customStyles={{
-                                        optionsContainer: {
-                                            backgroundColor: theme.colors.card,
-                                        },
-                                        optionWrapper: {
-                                            padding: 16,
-                                            paddingVertical: 10,
-                                        },
-                                        OptionTouchableComponent: RectButton,
-                                    }}
-                                >
-                                    <MenuOption>
-                                        <TextThemed theme={theme}>
-                                            List
-                                        </TextThemed>
-                                    </MenuOption>
-                                    <MenuOption>
-                                        <TextThemed theme={theme}>
-                                            List compact
-                                        </TextThemed>
-                                    </MenuOption>
-                                    <MenuOption>
-                                        <TextThemed theme={theme}>
-                                            Grid
-                                        </TextThemed>
-                                    </MenuOption>
-                                </MenuOptions>
-                            </Menu>
+                            <PopupMenu
+                                items={[
+                                    {
+                                        label: "Sort by name",
+                                        value: "sort-name",
+                                        icon: Bars2Icon,
+                                    },
+                                    {
+                                        label: "Sort by date",
+                                        value: "sort-date",
+                                        icon: Bars2Icon,
+                                    },
+                                ]}
+                            >
+                                <Bars2Icon
+                                    size={24}
+                                    color={theme.colors.text}
+                                />
+                            </PopupMenu>
                         </View>
-                        {/* <View className="overflow-hidden">
-                            {props.isInserting && <NewItemField />}
-                        </View> */}
+                        <View className="overflow-hidden">
+                            {props.newEntryInputShown && (
+                                <Input
+                                    onSubmit={props.onSubmitEditing}
+                                    onRequestStopEditing={
+                                        props.onRequestStopEditing
+                                    }
+                                />
+                            )}
+                        </View>
                     </View>
                 </View>
             }
@@ -204,4 +128,37 @@ function List(props: ListProps) {
     );
 }
 
+function Input(props: {
+    onSubmit?(value: string): void;
+    onRequestStopEditing?(): void;
+    value?: string;
+}): ReactNode {
+    const theme = useTheme();
+    const [inputValue, setInputValue] = useState(props.value || "");
+    return (
+        <View className="flex-row items-center gap-x-4 p-2 px-4">
+            <TextInput
+                value={inputValue}
+                onChangeText={setInputValue}
+                className="flex-1 p-2 text-base color-text focus:border-2 focus:border-primary"
+                numberOfLines={1}
+                multiline={false}
+                placeholder="New folder name"
+                placeholderTextColor={theme.colors.border}
+                submitBehavior="blurAndSubmit"
+                onBlur={props.onRequestStopEditing}
+                onSubmitEditing={() => {
+                    props.onSubmit?.(inputValue);
+                    setInputValue("");
+                }}
+            />
+            <TouchableOpacity>
+                <XMarkIcon
+                    size={24}
+                    color={theme.colors.text}
+                />
+            </TouchableOpacity>
+        </View>
+    );
+}
 export default observer(List);
