@@ -7,13 +7,19 @@ import {
 } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { View } from "react-native";
+import { ToastAndroid, View } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import {
     ArrowDownTrayIcon,
+    ArrowUpCircleIcon,
+    ArrowUpTrayIcon,
     ChevronDownIcon,
+    ClockIcon,
     EllipsisHorizontalIcon,
+    PencilSquareIcon,
+    PlusCircleIcon,
     PlusIcon,
+    StarIcon,
     TrashIcon,
 } from "react-native-heroicons/outline";
 // @ts-ignore
@@ -60,27 +66,55 @@ export default function FolderPage() {
     );
 
     const popupMenu = useMemo(
-        () => [
-            {
-                label: "Download",
-                value: "download",
-                icon: ArrowDownTrayIcon,
-            },
-            {
-                label: "Delete",
-                value: "delete",
-                icon: TrashIcon,
-            },
-        ],
+        () =>
+            [
+                {
+                    label: "Download",
+                    value: "download",
+                    icon: ArrowDownTrayIcon,
+                },
+                selected.size === 1 && {
+                    label: "Rename",
+                    value: "rename",
+                    icon: PencilSquareIcon,
+                },
+                {
+                    label: "Delete",
+                    value: "delete",
+                    icon: TrashIcon,
+                },
+            ].filter((item) => Boolean(item)),
         []
+    );
+
+    const selectionMenuTitle = useMemo(
+        () =>
+            selected.size > 0 ?
+                selected.size === 1 ?
+                    `${contents.find(({ id }) => id === selected.values().next().value)?.name}`
+                :   `${selected.size} selected`
+            :   "",
+        [contents, selected]
     );
 
     // Effects
     useEffect(() => {
         navigation.setOptions({
-            title: route.params.name,
+            //title: route.params.name,
+            title: "",
         });
     }, [navigation, route.params.name]);
+
+    useEffect(() => {
+        const subscription = folderService.createResult$.subscribe((value) => {
+            if (value.success)
+                ToastAndroid.show(
+                    `${value.data.name} created successful`,
+                    ToastAndroid.LONG
+                );
+        });
+        return () => subscription.unsubscribe();
+    }, []);
 
     useBackHandler(Boolean(selected?.size), () => {
         setSelected(new Set());
@@ -122,9 +156,17 @@ export default function FolderPage() {
     return (
         <View style={{ flex: 1 }}>
             <View className="flex-row items-center gap-x-6 p-4">
-                <ButtonUpload />
                 <RectButton onPress={() => setShowCreateInput((v) => !v)}>
-                    <View className="flex-row items-center gap-x-3 rounded-full border border-text p-2 px-5">
+                    <View className="flex-row items-center gap-x-3 border border-text bg-text p-2 px-4">
+                        <PlusCircleIcon
+                            size={18}
+                            color={theme.colors.background}
+                        />
+                        <Text color="background">Upload</Text>
+                    </View>
+                </RectButton>
+                <RectButton onPress={() => setShowCreateInput((v) => !v)}>
+                    <View className="flex-row items-center gap-x-3 border border-text/80 p-2 px-4">
                         <PlusIcon
                             size={18}
                             color={theme.colors.text}
@@ -163,32 +205,23 @@ export default function FolderPage() {
                         <Text variant="h1">
                             {route.params.name || route.name}
                         </Text>
-                        <View className="mt-2 flex-row items-center justify-between gap-x-4">
-                            {selected.size < 1 ?
+                        <View className="mt-4 flex-row items-center gap-x-4">
+                            {selected.size > 0 && (
                                 <>
-                                    <RectButton>
-                                        <View className="flex-row items-center justify-center gap-x-2 border border-text px-4 py-2">
-                                            <Text color="background">
-                                                Recents
-                                            </Text>
-                                        </View>
-                                    </RectButton>
-                                </>
-                            :   <>
                                     <RectButton>
                                         <View className="flex-row items-center justify-center gap-x-4 bg-text px-4 py-2">
                                             <Text color="background">
                                                 Share selected
                                             </Text>
                                             <ChevronDownIcon
-                                                size={18}
+                                                size={16}
                                                 color={theme.colors.background}
                                             />
                                         </View>
                                     </RectButton>
                                     <PopupMenu
                                         items={popupMenu}
-                                        title="Actions"
+                                        title={selectionMenuTitle}
                                         onOptionSelect={handleSelectionOption}
                                     >
                                         <View className="p-2">
@@ -199,7 +232,7 @@ export default function FolderPage() {
                                         </View>
                                     </PopupMenu>
                                 </>
-                            }
+                            )}
                         </View>
                     </>
                 }

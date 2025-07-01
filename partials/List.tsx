@@ -10,7 +10,7 @@ import store from "../stores";
 import { ReactNode, useMemo, useState } from "react";
 import { FileType, FolderType } from "../__generated__/schemas/graphql";
 import ListItem from "../components/ListItem";
-import { TextThemed } from "../components/Text";
+import Text, { TextThemed } from "../components/Text";
 import { useTheme } from "@react-navigation/native";
 import {
     Bars2Icon,
@@ -77,39 +77,48 @@ function List(props: ListProps) {
                 />
             }
             keyExtractor={({ id }) => `folder-list-item-${id}`}
+            ListEmptyComponent={
+                <View className="mt-6 items-center justify-center p-4 opacity-50">
+                    <Text variant="h4">No contents :(</Text>
+                </View>
+            }
             ListHeaderComponent={
                 <View className="flex-col gap-y-2">
                     {props.header && (
                         <View className="p-4">{props.header}</View>
                     )}
-                    <View className="mb-4 flex-row items-center justify-between px-4">
-                        <View className="flex-row items-center gap-x-3">
-                            <View
-                                style={{ borderColor: theme.colors.border }}
-                                className="h-5 w-5 border"
-                            />
-                            <TextThemed theme={theme}>Name</TextThemed>
-                        </View>
-                        <View>
-                            <PopupMenu
-                                items={[
-                                    {
-                                        label: "Sort by name",
-                                        value: "sort-name",
-                                        icon: Bars2Icon,
-                                    },
-                                    {
-                                        label: "Sort by date",
-                                        value: "sort-date",
-                                        icon: Bars2Icon,
-                                    },
-                                ]}
-                            >
-                                <Bars2Icon
-                                    size={24}
-                                    color={theme.colors.text}
+                    <>
+                        <View className="mb-4 flex-row items-center justify-between px-4">
+                            <View className="flex-row items-center gap-x-3">
+                                <View
+                                    style={{
+                                        borderColor: theme.colors.border,
+                                    }}
+                                    className="h-5 w-5 border"
                                 />
-                            </PopupMenu>
+                                <TextThemed theme={theme}>Name</TextThemed>
+                            </View>
+                            <View>
+                                <PopupMenu
+                                    items={[
+                                        {
+                                            label: "Sort by name",
+                                            value: "sort-name",
+                                            icon: Bars2Icon,
+                                        },
+                                        {
+                                            label: "Sort by date",
+                                            value: "sort-date",
+                                            icon: Bars2Icon,
+                                        },
+                                    ]}
+                                >
+                                    <Bars2Icon
+                                        size={24}
+                                        color={theme.colors.text}
+                                    />
+                                </PopupMenu>
+                            </View>
                         </View>
                         <View className="overflow-hidden">
                             {props.newEntryInputShown && (
@@ -121,7 +130,7 @@ function List(props: ListProps) {
                                 />
                             )}
                         </View>
-                    </View>
+                    </>
                 </View>
             }
         />
@@ -140,9 +149,12 @@ function Input(props: {
             <TextInput
                 value={inputValue}
                 onChangeText={setInputValue}
-                className="flex-1 p-2 text-base color-text focus:border-2 focus:border-primary"
+                className="flex-1 p-2 py-1.5 text-lg color-text focus:border-2 focus:border-primary"
                 numberOfLines={1}
                 multiline={false}
+                autoFocus
+                autoCapitalize="none"
+                selectTextOnFocus
                 placeholder="New folder name"
                 placeholderTextColor={theme.colors.border}
                 submitBehavior="blurAndSubmit"
