@@ -7,26 +7,35 @@ import {
 } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ToastAndroid, View } from "react-native";
+import { StyleSheet, ToastAndroid, TouchableOpacity, View } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import {
-    ArrowDownTrayIcon,
+    ArrowsUpDownIcon,
     ChevronDownIcon,
     EllipsisHorizontalIcon,
-    PencilSquareIcon,
-    PlusCircleIcon,
+    EllipsisVerticalIcon,
     PlusIcon,
     TrashIcon,
 } from "react-native-heroicons/outline";
 // @ts-ignore
 import symmetricDifference from "set.prototype.symmetricdifference";
 import { GetFolderDocument } from "../__generated__/schemas/graphql";
-import PopupMenu from "../components/PopupMenu";
-import Text from "../components/Text";
+import Text, { TextThemed } from "../components/Text";
 import useBackHandler from "../hooks/useBackHandler";
 import List, { FolderUnionFile } from "../partials/List";
 import { RootStackParamList } from "../Router";
 import { folderService } from "../services/folder.actions";
+import DownloadIcon from "../components/icons/DownloadIcon";
+import {
+    Menu,
+    MenuOption,
+    MenuOptions,
+    MenuTrigger,
+} from "react-native-popup-menu";
+import UsersIcon from "../components/icons/UsersIcon";
+import InfoIcon from "../components/icons/InfoIcon";
+import UserPlusIcon from "../components/icons/UserPlusIcon";
+import SearchIcon from "../components/icons/SearchIcon";
 
 type FolderRouteProp = RouteProp<RootStackParamList, "Folder">;
 type FolderNavigationProp = NativeStackNavigationProp<
@@ -60,45 +69,32 @@ export default function FolderPage() {
         [data]
     );
 
-    const popupMenu = useMemo(
-        () =>
-            [
-                {
-                    label: "Download",
-                    value: "download",
-                    icon: ArrowDownTrayIcon,
-                },
-                selected.size === 1 && {
-                    label: "Rename",
-                    value: "rename",
-                    icon: PencilSquareIcon,
-                },
-                {
-                    label: "Delete",
-                    value: "delete",
-                    icon: TrashIcon,
-                },
-            ].filter((item) => Boolean(item)),
-        [selected.size]
-    );
-
-    const selectionMenuTitle = useMemo(
-        () =>
-            selected.size > 0 ?
-                selected.size === 1 ?
-                    `${contents.find(({ id }) => id === selected.values().next().value)?.name}`
-                :   `${selected.size} selected`
-            :   "",
-        [contents, selected]
-    );
-
     // Effects
     useEffect(() => {
         navigation.setOptions({
             //title: route.params.name,
             title: "",
+            headerRight({ tintColor = theme.colors.text }) {
+                return (
+                    <View className="flex-row items-center gap-x-3 pr-4">
+                        <TouchableOpacity className="p-2">
+                            <SearchIcon
+                                size={24}
+                                color={tintColor}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity className="p-2">
+                            <UserPlusIcon
+                                size={24}
+                                color={tintColor}
+                            />
+                        </TouchableOpacity>
+                        <Options />
+                    </View>
+                );
+            },
         });
-    }, [navigation, route.params.name]);
+    }, [navigation, route.params.name, theme.colors.text]);
 
     useEffect(() => {
         const subscription = folderService.createResult$.subscribe((value) => {
@@ -152,21 +148,26 @@ export default function FolderPage() {
         <View style={{ flex: 1 }}>
             <View className="flex-row items-center gap-x-6 p-4">
                 <RectButton onPress={() => setShowCreateInput((v) => !v)}>
-                    <View className="flex-row items-center gap-x-3 border border-text bg-text p-2 px-4">
-                        <PlusCircleIcon
-                            size={18}
-                            color={theme.colors.background}
+                    <View className="flex-row items-center gap-x-3 rounded-full border border-text/15 bg-text/15 p-2 px-4">
+                        <ArrowsUpDownIcon
+                            size={20}
+                            color={theme.colors.text}
                         />
-                        <Text color="background">Upload</Text>
+                        <Text variant="label">Upload</Text>
                     </View>
                 </RectButton>
                 <RectButton onPress={() => setShowCreateInput((v) => !v)}>
-                    <View className="flex-row items-center gap-x-3 border border-text/80 p-2 px-4">
+                    <View className="flex-row items-center gap-x-3 rounded-full border border-text/65 p-2 px-4">
                         <PlusIcon
-                            size={18}
+                            size={20}
                             color={theme.colors.text}
                         />
-                        <Text color="secondary">Create</Text>
+                        <Text
+                            color="secondary"
+                            variant="label"
+                        >
+                            Create
+                        </Text>
                     </View>
                 </RectButton>
             </View>
@@ -204,29 +205,17 @@ export default function FolderPage() {
                             {selected.size > 0 && (
                                 <>
                                     <RectButton>
-                                        <View className="flex-row items-center justify-center gap-x-4 bg-text px-4 py-2">
-                                            <Text color="background">
+                                        <View className="flex-row items-center justify-center gap-x-4 rounded-full border border-text/15 bg-text/15 px-4 py-2">
+                                            <Text variant="label">
                                                 Share selected
                                             </Text>
                                             <ChevronDownIcon
                                                 size={16}
-                                                color={theme.colors.background}
-                                            />
-                                        </View>
-                                    </RectButton>
-                                    <PopupMenu
-                                        //@ts-ignore
-                                        items={popupMenu}
-                                        title={selectionMenuTitle}
-                                        onOptionSelect={handleSelectionOption}
-                                    >
-                                        <View className="p-2">
-                                            <EllipsisHorizontalIcon
-                                                size={24}
                                                 color={theme.colors.text}
                                             />
                                         </View>
-                                    </PopupMenu>
+                                    </RectButton>
+                                    <SelectionContextMenu />
                                 </>
                             )}
                         </View>
@@ -234,5 +223,143 @@ export default function FolderPage() {
                 }
             />
         </View>
+    );
+}
+
+function Options() {
+    const theme = useTheme();
+    return (
+        <Menu>
+            <MenuTrigger>
+                <View className="p-2">
+                    <EllipsisVerticalIcon
+                        size={24}
+                        color={theme.colors.text}
+                    />
+                </View>
+            </MenuTrigger>
+            <MenuOptions
+                customStyles={{
+                    optionsContainer: {
+                        backgroundColor: theme.colors.card,
+                        borderWidth: StyleSheet.hairlineWidth,
+                        borderColor: theme.colors.border,
+                    },
+                    optionWrapper: {
+                        flexDirection: "row",
+                        paddingHorizontal: 16,
+                        paddingVertical: 8,
+                        columnGap: 16,
+                    },
+                }}
+            >
+                <MenuOption>
+                    <UsersIcon
+                        size={20}
+                        color={theme.colors.text}
+                    />
+                    <TextThemed
+                        variant="label"
+                        theme={theme}
+                    >
+                        Manage access
+                    </TextThemed>
+                </MenuOption>
+                <MenuOption>
+                    <InfoIcon
+                        size={20}
+                        color={theme.colors.text}
+                    />
+                    <TextThemed
+                        variant="label"
+                        theme={theme}
+                    >
+                        Info
+                    </TextThemed>
+                </MenuOption>
+            </MenuOptions>
+        </Menu>
+    );
+}
+
+function SelectionContextMenu() {
+    const theme = useTheme();
+    return (
+        <Menu>
+            <MenuTrigger>
+                <View className="p-2">
+                    <EllipsisHorizontalIcon
+                        size={24}
+                        color={theme.colors.text}
+                    />
+                </View>
+            </MenuTrigger>
+            <MenuOptions
+                customStyles={{
+                    optionsContainer: {
+                        backgroundColor: theme.colors.card,
+                        borderWidth: StyleSheet.hairlineWidth,
+                        borderColor: theme.colors.border,
+                    },
+                    optionWrapper: {
+                        flexDirection: "row",
+                        paddingHorizontal: 16,
+                        paddingVertical: 8,
+                        columnGap: 16,
+                    },
+                }}
+            >
+                <MenuOption>
+                    <UsersIcon
+                        size={20}
+                        color={theme.colors.text}
+                    />
+                    <TextThemed
+                        variant="label"
+                        theme={theme}
+                    >
+                        Manage access
+                    </TextThemed>
+                </MenuOption>
+                <MenuOption>
+                    <DownloadIcon
+                        size={20}
+                        color={theme.colors.text}
+                    />
+                    <TextThemed
+                        variant="label"
+                        theme={theme}
+                    >
+                        Download
+                    </TextThemed>
+                </MenuOption>
+                <View className="border-b border-border" />
+                <MenuOption>
+                    <TrashIcon
+                        size={20}
+                        color={theme.colors.text}
+                    />
+                    <TextThemed
+                        variant="label"
+                        theme={theme}
+                    >
+                        Delete
+                    </TextThemed>
+                </MenuOption>
+                <View className="border-b border-border" />
+                <MenuOption>
+                    <InfoIcon
+                        size={20}
+                        color={theme.colors.text}
+                    />
+                    <TextThemed
+                        variant="label"
+                        theme={theme}
+                    >
+                        Info
+                    </TextThemed>
+                </MenuOption>
+            </MenuOptions>
+        </Menu>
     );
 }

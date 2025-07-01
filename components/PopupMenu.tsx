@@ -68,7 +68,12 @@ export default function PopupMenu(props: PropsWithChildren<PopupMenuProps>) {
                             size={20}
                             color={theme.colors.text}
                         />
-                        <TextThemed theme={theme}>{label}</TextThemed>
+                        <TextThemed
+                            variant="label"
+                            theme={theme}
+                        >
+                            {label}
+                        </TextThemed>
                     </MenuOption>
                 ))}
             </MenuOptions>

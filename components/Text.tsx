@@ -40,7 +40,7 @@ export const variants = {
         fontFamily: "MontrealRegular",
     },
     label: {
-        fontSize: 14 * scale,
+        fontSize: 16 * scale,
         fontFamily: "MontrealMedium",
     },
     subtitle: {

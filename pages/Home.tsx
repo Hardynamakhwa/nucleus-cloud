@@ -5,22 +5,25 @@ import { useEffect, useState } from "react";
 
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../Router";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useTheme } from "@react-navigation/native";
 import {
     DeleteFolderDocument,
     GetRootDocument,
 } from "../__generated__/schemas/graphql";
-import ButtonNew from "../partials/ButtonNew";
-import ButtonUpload from "../partials/ButtonUpload";
 import UserOverview from "../partials/UserOverview";
 import { View } from "react-native";
+import { RectButton } from "react-native-gesture-handler";
+import { ArrowsUpDownIcon, PlusIcon } from "react-native-heroicons/outline";
+import Text from "../components/Text";
+import { folderService } from "../services/folder.actions";
 
 type HomeNavigationProps = NativeStackNavigationProp<RootStackParamList>;
 const typename = <T extends string>(name: T): T => name;
 
 export default function HomePage() {
     const navigation = useNavigation<HomeNavigationProps>();
-
+    const theme = useTheme();
+    const [showCreateInput, setShowCreateInput] = useState(false);
     const { loading, data, refetch } = useQuery(GetRootDocument);
     const [deleteFolder] = useMutation(DeleteFolderDocument, {
         optimisticResponse() {
@@ -110,8 +113,29 @@ export default function HomePage() {
     return (
         <View style={{ flex: 1 }}>
             <View className="flex-row items-center gap-x-6 p-4">
-                <ButtonUpload />
-                <ButtonNew />
+                <RectButton onPress={() => setShowCreateInput((v) => !v)}>
+                    <View className="flex-row items-center gap-x-3 rounded-full border border-text/15 bg-text/15 p-2 px-4">
+                        <ArrowsUpDownIcon
+                            size={20}
+                            color={theme.colors.text}
+                        />
+                        <Text variant="label">Upload</Text>
+                    </View>
+                </RectButton>
+                <RectButton onPress={() => setShowCreateInput((v) => !v)}>
+                    <View className="flex-row items-center gap-x-3 rounded-full border border-text/65 p-2 px-4">
+                        <PlusIcon
+                            size={20}
+                            color={theme.colors.text}
+                        />
+                        <Text
+                            color="secondary"
+                            variant="label"
+                        >
+                            Create
+                        </Text>
+                    </View>
+                </RectButton>
             </View>
             <List
                 data={contents}
@@ -125,6 +149,13 @@ export default function HomePage() {
                         symmetricDifference(currentState, new Set([id]))
                     )
                 }
+                newEntryInputShown={showCreateInput}
+                onRequestStopEditing={() => setShowCreateInput(false)}
+                onSubmitEditing={(name) => {
+                    folderService.create.next({
+                        name,
+                    });
+                }}
                 onSelectionOption={onSelectionOptionHandler}
             />
         </View>

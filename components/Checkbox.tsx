@@ -1,7 +1,7 @@
 import { useTheme } from "@react-navigation/native";
 import { View } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
-import { CheckIcon } from "react-native-heroicons/outline";
+import CheckIcon from "./icons/CheckIcon";
 
 interface CheckboxProps {
     checked?: boolean;
@@ -24,11 +24,11 @@ export default function Checkbox(props: CheckboxProps) {
                     backgroundColor:
                         props.checked ? theme.colors.primary : undefined,
                 }}
-                className="h-5 w-5 items-center justify-center border-2"
+                className="h-5 w-5 items-center justify-center rounded-sm border"
             >
                 {props.checked && (
                     <CheckIcon
-                        size={14}
+                        size={16}
                         color={theme.colors.background}
                     />
                 )}

@@ -18,6 +18,7 @@ import {
     XMarkIcon,
 } from "react-native-heroicons/outline";
 import PopupMenu from "../components/PopupMenu";
+import Checkbox from "../components/Checkbox";
 
 export type FolderUnionFile = FolderType | FileType;
 
@@ -90,12 +91,7 @@ function List(props: ListProps) {
                     <>
                         <View className="mb-4 flex-row items-center justify-between px-4">
                             <View className="flex-row items-center gap-x-3">
-                                <View
-                                    style={{
-                                        borderColor: theme.colors.border,
-                                    }}
-                                    className="h-5 w-5 border"
-                                />
+                                <Checkbox />
                                 <TextThemed theme={theme}>Name</TextThemed>
                             </View>
                             <View>
