@@ -1,30 +1,27 @@
 import symmetricDifference from "set.prototype.symmetricdifference";
 import { useMutation, useQuery } from "@apollo/client";
-import { TouchableOpacity, View } from "react-native";
 import List, { FolderUnionFile } from "../partials/List";
 import { useEffect, useState } from "react";
 
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../Router";
-import { useNavigation, useTheme } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import {
     DeleteFolderDocument,
     GetRootDocument,
 } from "../__generated__/schemas/graphql";
-import GravatarImage from "../components/GravatarImage";
-import useAuth from "../hooks/useAuth";
 import ButtonNew from "../partials/ButtonNew";
 import ButtonUpload from "../partials/ButtonUpload";
+import UserOverview from "../partials/UserOverview";
+import { View } from "react-native";
 
 type HomeNavigationProps = NativeStackNavigationProp<RootStackParamList>;
 const typename = <T extends string>(name: T): T => name;
 
 export default function HomePage() {
     const navigation = useNavigation<HomeNavigationProps>();
-    const theme = useTheme();
-    const auth = useAuth();
 
-    const { loading, data, refetch, error } = useQuery(GetRootDocument);
+    const { loading, data, refetch } = useQuery(GetRootDocument);
     const [deleteFolder] = useMutation(DeleteFolderDocument, {
         optimisticResponse() {
             return {
@@ -106,20 +103,9 @@ export default function HomePage() {
 
     useEffect(() => {
         navigation.setOptions({
-            headerLeft(props) {
-                return (
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate("Settings")}
-                    >
-                        <GravatarImage
-                            email={`${auth.user?.email}`}
-                            size={42}
-                        />
-                    </TouchableOpacity>
-                );
-            },
+            headerLeft: () => <UserOverview />,
         });
-    }, [auth.user?.email, navigation]);
+    }, [navigation]);
 
     return (
         <View style={{ flex: 1 }}>

@@ -9,7 +9,7 @@ import {
 import store from "../stores";
 import { ReactNode, useMemo, useState } from "react";
 import { FileType, FolderType } from "../__generated__/schemas/graphql";
-import ListItem from "../components/ListItem";
+import ListItem from "./ListItem";
 import Text, { TextThemed } from "../components/Text";
 import { useTheme } from "@react-navigation/native";
 import {

@@ -39,6 +39,18 @@ export const variants = {
         fontSize: 16 * scale,
         fontFamily: "MontrealRegular",
     },
+    label: {
+        fontSize: 14 * scale,
+        fontFamily: "MontrealMedium",
+    },
+    subtitle: {
+        fontSize: 14 * scale,
+        fontFamily: "MontrealLight",
+    },
+    caption: {
+        fontSize: 12 * scale,
+        fontFamily: "MontrealLight",
+    },
 };
 
 const defaults: { color: TextProps["color"]; variant: TextProps["variant"] } = {
