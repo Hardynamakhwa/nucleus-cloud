@@ -11,15 +11,11 @@ import { ToastAndroid, View } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import {
     ArrowDownTrayIcon,
-    ArrowUpCircleIcon,
-    ArrowUpTrayIcon,
     ChevronDownIcon,
-    ClockIcon,
     EllipsisHorizontalIcon,
     PencilSquareIcon,
     PlusCircleIcon,
     PlusIcon,
-    StarIcon,
     TrashIcon,
 } from "react-native-heroicons/outline";
 // @ts-ignore
@@ -28,7 +24,6 @@ import { GetFolderDocument } from "../__generated__/schemas/graphql";
 import PopupMenu from "../components/PopupMenu";
 import Text from "../components/Text";
 import useBackHandler from "../hooks/useBackHandler";
-import ButtonUpload from "../partials/ButtonUpload";
 import List, { FolderUnionFile } from "../partials/List";
 import { RootStackParamList } from "../Router";
 import { folderService } from "../services/folder.actions";
@@ -84,7 +79,7 @@ export default function FolderPage() {
                     icon: TrashIcon,
                 },
             ].filter((item) => Boolean(item)),
-        []
+        [selected.size]
     );
 
     const selectionMenuTitle = useMemo(
@@ -220,6 +215,7 @@ export default function FolderPage() {
                                         </View>
                                     </RectButton>
                                     <PopupMenu
+                                        //@ts-ignore
                                         items={popupMenu}
                                         title={selectionMenuTitle}
                                         onOptionSelect={handleSelectionOption}
