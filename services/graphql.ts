@@ -7,6 +7,7 @@ import {
     InMemoryCache,
 } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
+import { mergeDeep } from "@apollo/client/utilities";
 import { AuthStore } from "../stores/auth";
 import api from "./axios";
 
@@ -71,7 +72,30 @@ const errorLink = onError(({ graphQLErrors, forward, operation }) => {
 
 const client = new ApolloClient({
     link: from([errorLink, authLink, httpLink]),
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+        typePolicies: {
+            Query: {
+                fields: {
+                    folder: {
+                        merge(existing = {}, incoming) {
+                            return mergeDeep(existing, incoming);
+                        },
+                    },
+                },
+            },
+            FolderQueries: {
+                fields: {
+                    getAll: {
+                        keyArgs: false,
+                        merge: (_, incoming) => incoming,
+                    },
+                    get: {
+                        keyArgs: ["id"],
+                    },
+                },
+            },
+        },
+    }),
 });
 
 export default client;

@@ -29,6 +29,7 @@ folderService.create
                             folder: {
                                 __typename: typename("FolderMutations"),
                                 create: {
+                                    __typename: typename("FolderType"),
                                     id:
                                         "temp-id-"
                                         + Math.random().toString(36).slice(2),
@@ -204,6 +205,8 @@ folderService.delete
                                 },
                             });
 
+                            if (!existing?.folder?.get) return;
+
                             cache.writeQuery({
                                 query: GetFolderDocument,
                                 variables: {
@@ -212,7 +215,7 @@ folderService.delete
                                 data: {
                                     folder: {
                                         get: {
-                                            ...existing?.folder.get!,
+                                            ...existing?.folder.get,
                                             folders:
                                                 existing?.folder.get?.folders.filter(
                                                     ({ id }) =>
@@ -226,6 +229,7 @@ folderService.delete
                             const existing = cache.readQuery({
                                 query: GetRootDocument,
                             });
+                            if (!existing?.folder?.getAll) return;
 
                             cache.writeQuery({
                                 query: GetRootDocument,
