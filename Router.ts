@@ -10,6 +10,7 @@ import RegisterPage from "./pages/Register";
 import SettingsGeneralTab from "./pages/Settings/General";
 import SettingsNotificationsTab from "./pages/Settings/Notifications";
 import SettingsSecurityTab from "./pages/Settings/Security";
+import ChangePasswordPage from "./pages/modals/ChangePassword";
 
 export type RootStackParamList = {
     Login: undefined;
@@ -20,6 +21,7 @@ export type RootStackParamList = {
         name?: string;
     };
     Settings: undefined;
+    ChangePassword: undefined;
 };
 
 const SettingsTabs = createMaterialTopTabNavigator({
@@ -75,6 +77,10 @@ const RootStack = createNativeStackNavigator({
                 },
                 Folder: FolderPage,
                 Settings: SettingsTabs,
+                ChangePassword: {
+                    screen: ChangePasswordPage,
+                    options: { presentation: "modal" },
+                },
             },
             screenOptions: {
                 animation: "slide_from_right",

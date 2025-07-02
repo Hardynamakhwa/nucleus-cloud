@@ -1,5 +1,5 @@
 import { PropsWithChildren } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import Text from "./Text";
 import { useTheme } from "@react-navigation/native";

@@ -1,5 +1,6 @@
 import { ScrollView, View } from "react-native";
 import Text from "../../components/Text";
+import { Link } from "@react-navigation/native";
 
 export default function SettingsSecurityTab() {
     return (
@@ -14,7 +15,9 @@ export default function SettingsSecurityTab() {
                                 cloud acount
                             </Text>
                         </View>
-                        <Text color="primary">Change password</Text>
+                        <Link screen="ChangePassword" params={{}}>
+                            <Text color="primary">Change password</Text>
+                        </Link>
                     </View>
                 </View>
             </View>

@@ -1,5 +1,5 @@
 import { useTheme } from "@react-navigation/native";
-import { ElementType, ReactNode } from "react";
+import { ElementType } from "react";
 import { View } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import Text from "./Text";

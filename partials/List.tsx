@@ -2,23 +2,19 @@ import { observer } from "mobx-react-lite";
 import {
     FlatList,
     RefreshControl,
-    TextInput,
-    TouchableOpacity,
     View,
+    ActivityIndicator,
 } from "react-native";
 import store from "../stores";
-import { ReactNode, useMemo, useState } from "react";
+import { ReactNode, useMemo } from "react";
 import { FileType, FolderType } from "../__generated__/schemas/graphql";
 import ListItem from "./ListItem";
-import Text, { TextThemed } from "../components/Text";
+import Text from "../components/Text";
 import { useTheme } from "@react-navigation/native";
-import {
-    Bars2Icon,
-    FolderIcon,
-    XMarkIcon,
-} from "react-native-heroicons/outline";
-import PopupMenu from "../components/PopupMenu";
-import Checkbox from "../components/Checkbox";
+import { FolderIcon } from "react-native-heroicons/outline";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import NewEntryInput from "../components/NewEntryInput";
+import ListHeader from "../components/ListHeader";
 
 export type FolderUnionFile = FolderType | FileType;
 
@@ -89,36 +85,10 @@ function List(props: ListProps) {
                         <View className="p-4">{props.header}</View>
                     )}
                     <>
-                        <View className="mb-4 flex-row items-center justify-between px-4">
-                            <View className="flex-row items-center gap-x-3">
-                                <Checkbox />
-                                <TextThemed theme={theme}>Name</TextThemed>
-                            </View>
-                            <View>
-                                <PopupMenu
-                                    items={[
-                                        {
-                                            label: "Sort by name",
-                                            value: "sort-name",
-                                            icon: Bars2Icon,
-                                        },
-                                        {
-                                            label: "Sort by date",
-                                            value: "sort-date",
-                                            icon: Bars2Icon,
-                                        },
-                                    ]}
-                                >
-                                    <Bars2Icon
-                                        size={24}
-                                        color={theme.colors.text}
-                                    />
-                                </PopupMenu>
-                            </View>
-                        </View>
+                        <ListHeader />
                         <View className="overflow-hidden">
                             {props.newEntryInputShown && (
-                                <Input
+                                <NewEntryInput
                                     onSubmit={props.onSubmitEditing}
                                     onRequestStopEditing={
                                         props.onRequestStopEditing
@@ -129,44 +99,22 @@ function List(props: ListProps) {
                     </>
                 </View>
             }
+            ListFooterComponent={
+                props.loading ?
+                    <Animated.View
+                        entering={FadeIn}
+                        exiting={FadeOut}
+                        className="items-center justify-center p-4"
+                    >
+                        <ActivityIndicator
+                            size="large"
+                            color={theme.colors.primary}
+                        />
+                    </Animated.View>
+                :   undefined
+            }
         />
     );
 }
 
-function Input(props: {
-    onSubmit?(value: string): void;
-    onRequestStopEditing?(): void;
-    value?: string;
-}): ReactNode {
-    const theme = useTheme();
-    const [inputValue, setInputValue] = useState(props.value || "");
-    return (
-        <View className="flex-row items-center gap-x-4 p-2 px-4">
-            <TextInput
-                value={inputValue}
-                onChangeText={setInputValue}
-                className="flex-1 p-2 py-1.5 text-lg color-text focus:border-2 focus:border-primary"
-                numberOfLines={1}
-                multiline={false}
-                autoFocus
-                autoCapitalize="none"
-                selectTextOnFocus
-                placeholder="New folder name"
-                placeholderTextColor={theme.colors.border}
-                submitBehavior="blurAndSubmit"
-                onBlur={props.onRequestStopEditing}
-                onSubmitEditing={() => {
-                    props.onSubmit?.(inputValue);
-                    setInputValue("");
-                }}
-            />
-            <TouchableOpacity>
-                <XMarkIcon
-                    size={24}
-                    color={theme.colors.text}
-                />
-            </TouchableOpacity>
-        </View>
-    );
-}
 export default observer(List);

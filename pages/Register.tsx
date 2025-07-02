@@ -5,6 +5,7 @@ import { Button } from "../components/Button";
 import api from "../services/axios";
 import Text from "../components/Text";
 import { Link } from "@react-navigation/native";
+import store from "../stores";
 
 export default function RegisterPage() {
     const [formState, setFormState] = useState({
@@ -13,11 +14,64 @@ export default function RegisterPage() {
         password2: "",
     });
     const [isPending, setIsPending] = useState(false);
+    const [formStateErr, setFormStateErr] = useState({
+        email: [] as string[],
+        password: [] as string[],
+        password2: [] as string[],
+    });
+    const [err, setErr] = useState("");
 
     const submit = async () => {
         setIsPending(true);
+        setErr("");
+        setFormStateErr({
+            email: [],
+            password: [],
+            password2: [],
+        });
+
+        if (formState.password !== formState.password2) {
+            setFormStateErr((prev) => ({
+                ...prev,
+                password2: ["Passwords do not match."],
+            }));
+            setIsPending(false);
+            return;
+        }
+
         try {
-            const { data } = await api.post("/users", formState);
+            const { email, password } = formState;
+            const { data: userData } = await api.post("/users", { email, password });
+            const { data: tokenData } = await api.post("/token", {
+                email: formState.email,
+                password: formState.password,
+            });
+            store.auth.login(
+                {
+                    id: userData.id,
+                    email: userData.email,
+                    is_active: userData.is_active,
+                },
+                {
+                    accessToken: tokenData.access_token,
+                    refreshToken: tokenData.refresh_token,
+                    tokenType: tokenData.token_type,
+                }
+            );
+        } catch (e) {
+            switch (e.status) {
+                case 401:
+                    setErr(e.response.data.detail);
+                    break;
+                case 422:
+                    e.response.data.detail.forEach((err) => {
+                        setFormStateErr((prevState) => ({
+                            ...prevState,
+                            [err.loc[1]]: [err.ctx.reason],
+                        }));
+                    });
+                    break;
+            }
         } finally {
             setIsPending(false);
         }
@@ -27,8 +81,9 @@ export default function RegisterPage() {
         <ScrollView>
             <View className="mb-6 mt-4 p-4">
                 <Text variant="h3">Create an account</Text>
+                {err && <Text>{err}</Text>}
             </View>
-            <Field>
+            <Field errors={formStateErr.email}>
                 <Label>Email address</Label>
                 <Input
                     onInput={(email) =>
@@ -39,7 +94,7 @@ export default function RegisterPage() {
             </Field>
             <View className="-mt-4 flex-row items-center">
                 <View className="flex-1">
-                    <Field>
+                    <Field errors={formStateErr.password}>
                         <Label>Password</Label>
                         <Input
                             onInput={(password) =>
@@ -53,7 +108,7 @@ export default function RegisterPage() {
                     </Field>
                 </View>
                 <View className="flex-1">
-                    <Field>
+                    <Field errors={formStateErr.password2}>
                         <Label>Re-type password</Label>
                         <Input
                             onInput={(password2) =>
