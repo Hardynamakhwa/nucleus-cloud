@@ -77,7 +77,10 @@ export default function FolderPage() {
             headerRight({ tintColor = theme.colors.text }) {
                 return (
                     <View className="flex-row items-center gap-x-3">
-                        <TouchableOpacity className="p-2">
+                        <TouchableOpacity
+                            className="p-2"
+                            onPress={() => navigation.navigate("Search")}
+                        >
                             <SearchIcon
                                 size={24}
                                 color={tintColor}

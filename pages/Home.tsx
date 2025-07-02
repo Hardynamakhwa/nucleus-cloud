@@ -11,11 +11,13 @@ import {
     GetRootDocument,
 } from "../__generated__/schemas/graphql";
 import UserOverview from "../partials/UserOverview";
-import { View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import { ArrowsUpDownIcon, PlusIcon } from "react-native-heroicons/outline";
 import Text from "../components/Text";
 import { folderService } from "../services/folder.actions";
+import SearchIcon from "../components/icons/SearchIcon";
+import UserPlusIcon from "../components/icons/UserPlusIcon";
 
 type HomeNavigationProps = NativeStackNavigationProp<RootStackParamList>;
 const typename = <T extends string>(name: T): T => name;
@@ -107,8 +109,27 @@ export default function HomePage() {
     useEffect(() => {
         navigation.setOptions({
             headerLeft: () => <UserOverview />,
+            headerRight: ({ tintColor = theme.colors.text }) => (
+                <View className="flex-row items-center gap-x-3">
+                    <TouchableOpacity
+                        className="p-2"
+                        onPress={() => navigation.navigate("Search")}
+                    >
+                        <SearchIcon
+                            size={24}
+                            color={tintColor}
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity className="p-2">
+                        <UserPlusIcon
+                            size={24}
+                            color={tintColor}
+                        />
+                    </TouchableOpacity>
+                </View>
+            ),
         });
-    }, [navigation]);
+    }, [navigation, theme.colors.text]);
 
     return (
         <View style={{ flex: 1 }}>
