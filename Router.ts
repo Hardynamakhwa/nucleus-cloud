@@ -6,6 +6,8 @@ import { useIsSignedIn, useIsSignedOut } from "./hooks/useAuth";
 import FolderPage from "./pages/Folder";
 import HomePage from "./pages/Home";
 import LoginPage from "./pages/Login";
+import ManageAccessPeopleTab from "./pages/ManageAccess/People";
+import ManageAccessLinksTab from "./pages/ManageAccess/Links";
 import RegisterPage from "./pages/Register";
 import SettingsGeneralTab from "./pages/Settings/General";
 import SettingsNotificationsTab from "./pages/Settings/Notifications";
@@ -22,6 +24,7 @@ export type RootStackParamList = {
         name?: string;
     };
     Settings: undefined;
+    ManageAccess: undefined;
     ChangePassword: undefined;
     Search: undefined;
 };
@@ -53,6 +56,29 @@ const SettingsTabs = createMaterialTopTabNavigator({
     initialRouteName: "SettingsGeneral",
 });
 
+const ManageAccessTabs = createMaterialTopTabNavigator({
+    screens: {
+        ManageAccessPeople: {
+            screen: ManageAccessPeopleTab,
+            options: { title: "People" },
+        },
+        ManageAccessLinks: {
+            screen: ManageAccessLinksTab,
+            options: { title: "Links" },
+        },
+    },
+    screenOptions: ({ theme }) => ({
+        tabBarItemStyle: { width: "auto" },
+        tabBarStyle: {
+            backgroundColor: theme.colors.background,
+            borderBottomWidth: 1,
+            borderBottomColor: theme.colors.border,
+            marginHorizontal: 16,
+        },
+    }),
+    initialRouteName: "ManageAccessPeople",
+});
+
 const RootStack = createNativeStackNavigator({
     groups: {
         LoggedOut: {
@@ -79,6 +105,7 @@ const RootStack = createNativeStackNavigator({
                 },
                 Folder: FolderPage,
                 Settings: SettingsTabs,
+                ManageAccess: ManageAccessTabs,
                 ChangePassword: {
                     screen: ChangePasswordPage,
                     options: { presentation: "modal" },
