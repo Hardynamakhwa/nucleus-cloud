@@ -1,12 +1,11 @@
-import { View, TextInput, TouchableOpacity } from "react-native";
-import { Pressable, RectButton } from "react-native-gesture-handler";
+import { View } from "react-native";
+import { RectButton } from "react-native-gesture-handler";
 import Text from "../components/Text";
-import { ReactElement, ReactNode, useRef } from "react";
+import { ReactElement, ReactNode } from "react";
 // eslint-disable-next-line import/no-named-as-default
 import clsx from "clsx";
 import Checkbox from "../components/Checkbox";
-import { XMarkIcon } from "react-native-heroicons/outline";
-import { useTheme } from "@react-navigation/native";
+import NewEntryInput from "../components/NewEntryInput";
 
 interface ListItemProps {
     title: string;
@@ -17,7 +16,7 @@ interface ListItemProps {
     isFirst?: boolean;
     compact?: boolean;
     editing?: boolean;
-    onSubmitEditing?(text: string): voidi;
+    onSubmitEditing?(text: string): void;
     onRequestStopEditing?(): void;
 }
 
@@ -32,9 +31,6 @@ export default function ListItem(props: ListItemPropsWithCheck): ReactElement;
 export default function ListItem(
     props: ListItemProps | ListItemPropsWithCheck
 ): ReactElement {
-    const theme = useTheme();
-    const editorRef = useRef<TextInput>(null);
-
     return (
         <RectButton
             onPress={props.onTap}
@@ -62,31 +58,12 @@ export default function ListItem(
                 >
                     {"leading" in props && <View>{props.leading}</View>}
                     {props.editing ?
-                        <View className="flex-1 flex-row items-center gap-x-3">
-                            <TextInput
-                                ref={editorRef}
-                                className="flex-1 border p-2 focus:border-2 focus:border-primary"
-                                autoFocus
-                                submitBehavior="blurAndSubmit"
-                                autoCapitalize="none"
-                                importantForAutofill="no"
-                                selectTextOnFocus
-                                onBlur={props.onRequestStopEditing}
-                                onSubmitEditing={(e) =>
-                                    props.onSubmitEditing?.(e.nativeEvent.text)
-                                }
+                        <View className="flex-1">
+                            <NewEntryInput
+                                value={props.title}
+                                onSubmit={props.onSubmitEditing}
+                                onRequestStopEditing={props.onRequestStopEditing}
                             />
-                            <TouchableOpacity
-                                onPress={() => {
-                                    editorRef.current?.clear();
-                                    editorRef.current?.blur();
-                                }}
-                            >
-                                <XMarkIcon
-                                    size={24}
-                                    color={theme.colors.text}
-                                />
-                            </TouchableOpacity>
                         </View>
                     :   <View className="flex-col gap-y-2">
                             <Text>{props.title}</Text>
