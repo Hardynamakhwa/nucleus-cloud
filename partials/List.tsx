@@ -10,11 +10,12 @@ import { ReactNode, useMemo } from "react";
 import { FileType, FolderType } from "../__generated__/schemas/graphql";
 import ListItem from "./ListItem";
 import Text from "../components/Text";
-import { useTheme } from "@react-navigation/native";
+import { RouteProp, useRoute, useTheme } from "@react-navigation/native";
 import { FolderIcon } from "react-native-heroicons/outline";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import NewEntryInput from "../components/NewEntryInput";
 import ListHeader from "../components/ListHeader";
+import {RootStackParamList} from "../Router";
 
 export type FolderUnionFile = FolderType | FileType;
 
@@ -34,9 +35,11 @@ interface ListProps {
     onSubmitEditing?(value: string): void;
 }
 
+type routeType = RouteProp<RootStackParamList>;
+
 function List(props: ListProps) {
     const theme = useTheme();
-
+    const route = useRoute<routeType>();
     const renderItem = ({ item }: { item: FolderUnionFile }) => {
         return (
             <ListItem
@@ -75,9 +78,15 @@ function List(props: ListProps) {
             }
             keyExtractor={({ id }) => `folder-list-item-${id}`}
             ListEmptyComponent={
-                <View className="mt-6 items-center justify-center p-4 opacity-50">
-                    <Text variant="h4">No contents :(</Text>
-                </View>
+                !props.loading && !props.newEntryInputShown ?
+                    <View className="mt-6 items-center justify-center p-4 opacity-50">
+                        <Text variant="h4">
+                            {route.name === "Folder" ?
+                                "This folder is empty"
+                            :   "No contents to show"}
+                        </Text>
+                    </View>
+                :   null
             }
             ListHeaderComponent={
                 <View className="flex-col gap-y-2">
@@ -90,6 +99,7 @@ function List(props: ListProps) {
                             {props.newEntryInputShown && (
                                 <NewEntryInput
                                     onSubmit={props.onSubmitEditing}
+                                    value="Untitled folder"
                                     onRequestStopEditing={
                                         props.onRequestStopEditing
                                     }

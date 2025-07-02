@@ -9,12 +9,13 @@ import GravatarImage from "../components/GravatarImage";
 import { useMemo, useRef, useState } from "react";
 import { TextThemed } from "../components/Text";
 import { useNavigation, useTheme } from "@react-navigation/native";
-import { ChevronRightIcon, UserPlusIcon } from "react-native-heroicons/outline";
+import { ChevronRightIcon } from "react-native-heroicons/outline";
 import store from "../stores";
 import { observer } from "mobx-react-lite";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../Router";
 import { RectButton } from "react-native-gesture-handler";
+import UserPlusIcon from "../components/icons/UserPlusIcon";
 type homeNavigation = NativeStackNavigationProp<RootStackParamList, "Home">;
 function UserOverview() {
     const navigation = useNavigation<homeNavigation>();
@@ -121,7 +122,7 @@ function UserOverview() {
                     <View className="border-b border-border" />
                     <MenuOption onSelect={logout}>
                         <UserPlusIcon
-                            size={18}
+                            size={20}
                             color={theme.colors.text}
                         />
                         <TextThemed

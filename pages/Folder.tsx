@@ -82,13 +82,13 @@ export default function FolderPage() {
                             onPress={() => navigation.navigate("Search")}
                         >
                             <SearchIcon
-                                size={24}
+                                size={20}
                                 color={tintColor}
                             />
                         </TouchableOpacity>
                         <TouchableOpacity className="p-2">
                             <UserPlusIcon
-                                size={24}
+                                size={20}
                                 color={tintColor}
                             />
                         </TouchableOpacity>
