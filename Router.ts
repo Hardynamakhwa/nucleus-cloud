@@ -14,6 +14,8 @@ import SettingsNotificationsTab from "./pages/Settings/Notifications";
 import SettingsSecurityTab from "./pages/Settings/Security";
 import ChangePasswordPage from "./pages/modals/ChangePassword";
 import SearchPage from "./pages/modals/Search";
+import {FileType, FolderType} from "./__generated__/schemas/graphql";
+import ManageAccessLayout from "./layouts/ManageAccessLayout";
 
 export type RootStackParamList = {
     Login: undefined;
@@ -24,7 +26,7 @@ export type RootStackParamList = {
         name?: string;
     };
     Settings: undefined;
-    ManageAccess: undefined;
+    ManageAccess: FileType|FolderType;
     ChangePassword: undefined;
     Search: undefined;
 };
@@ -77,6 +79,9 @@ const ManageAccessTabs = createMaterialTopTabNavigator({
         },
     }),
     initialRouteName: "ManageAccessPeople",
+    layout(props) {
+        return ManageAccessLayout(props);
+    },
 });
 
 const RootStack = createNativeStackNavigator({
@@ -101,7 +106,8 @@ const RootStack = createNativeStackNavigator({
             screens: {
                 Home: {
                     screen: HomePage,
-                    options: { title: "" },
+                    opitions: { title: "" },
+
                 },
                 Folder: FolderPage,
                 Settings: SettingsTabs,
@@ -112,9 +118,9 @@ const RootStack = createNativeStackNavigator({
                 },
                 Search: {
                     screen: SearchPage,
-                    options: { 
+                    options: {
                         presentation: "modal",
-                        animation: "fade" 
+                        animation: "fade",
                     },
                 },
             },
