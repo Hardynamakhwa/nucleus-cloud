@@ -36,6 +36,7 @@ import UsersIcon from "../components/icons/UsersIcon";
 import InfoIcon from "../components/icons/InfoIcon";
 import UserPlusIcon from "../components/icons/UserPlusIcon";
 import SearchIcon from "../components/icons/SearchIcon";
+import useContextMenu from "../hooks/useContextMenu";
 
 type FolderRouteProp = RouteProp<RootStackParamList, "Folder">;
 type FolderNavigationProp = NativeStackNavigationProp<
@@ -45,6 +46,8 @@ type FolderNavigationProp = NativeStackNavigationProp<
 
 export default function FolderPage() {
     // State declarations
+    const itemContext = useContextMenu();
+
     const [refreshInProgress, setRefreshInProgress] = useState(false);
     const [selected, setSelected] = useState(new Set<string>());
     const [showCreateInput, setShowCreateInput] = useState(false);
@@ -115,7 +118,7 @@ export default function FolderPage() {
     });
 
     // Handlers
-    const onTapHandler = useCallback(
+    const tapHandler = useCallback(
         (item: any) => {
             navigation.push("Folder", {
                 id: item.id,
@@ -124,6 +127,16 @@ export default function FolderPage() {
         },
         [navigation]
     );
+
+    const longTapHandler = (item: any) => {
+        itemContext.show(item).then((value) => {
+            switch (value) {
+                case "manage-permissions":
+                    navigation.navigate("ManagePermissions", item);
+                    break;
+            }
+        });
+    };
 
     const handleSelectionOption = useCallback(
         (option: any) => {
@@ -178,7 +191,8 @@ export default function FolderPage() {
                 data={contents}
                 loading={loading}
                 refreshing={refreshInProgress}
-                onTap={onTapHandler}
+                onTap={tapHandler}
+                onLongTap={longTapHandler}
                 onRefresh={() => {
                     setRefreshInProgress(true);
                     refetch().finally(() => setRefreshInProgress(false));

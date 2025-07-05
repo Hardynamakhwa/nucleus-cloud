@@ -1,3 +1,4 @@
+//@ts-ignore
 import symmetricDifference from "set.prototype.symmetricdifference";
 import { useMutation, useQuery } from "@apollo/client";
 import List, { FolderUnionFile } from "../partials/List";
@@ -18,6 +19,7 @@ import Text from "../components/Text";
 import { folderService } from "../services/folder.actions";
 import SearchIcon from "../components/icons/SearchIcon";
 import UserPlusIcon from "../components/icons/UserPlusIcon";
+import useContextMenu from "../hooks/useContextMenu";
 
 type HomeNavigationProps = NativeStackNavigationProp<RootStackParamList>;
 const typename = <T extends string>(name: T): T => name;
@@ -25,6 +27,7 @@ const typename = <T extends string>(name: T): T => name;
 export default function HomePage() {
     const navigation = useNavigation<HomeNavigationProps>();
     const theme = useTheme();
+    const itemContext = useContextMenu();
     const [showCreateInput, setShowCreateInput] = useState(false);
     const { loading, data, refetch } = useQuery(GetRootDocument);
     const [deleteFolder] = useMutation(DeleteFolderDocument, {
@@ -94,10 +97,19 @@ export default function HomePage() {
         refetch().finally(() => setRefreshing(false));
     };
 
-    const onTapHandler = (item: any) => {
+    const tapHandler = (item: any) => {
         navigation.push("Folder", {
             id: item.id,
             name: item.name,
+        });
+    };
+    const longTapHandler = (item: any) => {
+        itemContext.show(item).then((value) => {
+            switch (value) {
+                case "manage-permissions":
+                    navigation.navigate("ManagePermissions", item);
+                    break;
+            }
         });
     };
 
@@ -162,7 +174,8 @@ export default function HomePage() {
                 data={contents}
                 loading={loading}
                 refreshing={refreshing}
-                onTap={onTapHandler}
+                onTap={tapHandler}
+                onLongTap={longTapHandler}
                 onRefresh={onRefresh}
                 selection={selected}
                 onSelect={(id) =>

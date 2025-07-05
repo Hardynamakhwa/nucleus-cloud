@@ -12,6 +12,7 @@ interface ListItemProps {
     subtitle?: string;
     leading?: ReactNode;
     onTap?(): void;
+    onLongTap?(): void;
     disabled?: boolean;
     isFirst?: boolean;
     compact?: boolean;
@@ -34,6 +35,7 @@ export default function ListItem(
     return (
         <RectButton
             onPress={props.onTap}
+            onLongPress={props.onLongTap}
             enabled={!props.disabled}
         >
             <View className={clsx("flex-row items-center gap-x-4 px-2 pl-4")}>
@@ -62,7 +64,9 @@ export default function ListItem(
                             <NewEntryInput
                                 value={props.title}
                                 onSubmit={props.onSubmitEditing}
-                                onRequestStopEditing={props.onRequestStopEditing}
+                                onRequestStopEditing={
+                                    props.onRequestStopEditing
+                                }
                             />
                         </View>
                     :   <View className="flex-col gap-y-2">

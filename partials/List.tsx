@@ -15,7 +15,7 @@ import { FolderIcon } from "react-native-heroicons/outline";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import NewEntryInput from "../components/NewEntryInput";
 import ListHeader from "../components/ListHeader";
-import {RootStackParamList} from "../Router";
+import { RootStackParamList } from "../Router";
 
 export type FolderUnionFile = FolderType | FileType;
 
@@ -28,6 +28,7 @@ interface ListProps {
     selection?: Set<string>;
     onSelect?(item: string): void;
     onTap?(item: FolderUnionFile): void;
+    onLongTap?(item: FolderUnionFile): void;
     onSelectionOption?(option: any): void;
     header?: ReactNode;
     editing?: string;
@@ -56,6 +57,7 @@ function List(props: ListProps) {
                 onSubmitEditing={props.onSubmitEditing}
                 onRequestStopEditing={props.onRequestStopEditing}
                 onTap={() => props.onTap?.(item)}
+                onLongTap={() => props.onLongTap?.(item)}
                 checked={props.selection?.has(item.id)}
                 onChangeCheck={() => props.onSelect?.(item.id)}
             />
