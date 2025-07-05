@@ -20,6 +20,18 @@ export type Scalars = {
   Upload: { input: any; output: any; }
 };
 
+export type CreateFilePermissionInput = {
+  email: Scalars['String']['input'];
+  id: Scalars['UUID']['input'];
+  role: Role;
+};
+
+export type CreateFolderPermissionInput = {
+  email: Scalars['String']['input'];
+  id: Scalars['UUID']['input'];
+  role: Role;
+};
+
 export type DeleteResponse = {
   __typename?: 'DeleteResponse';
   message: Scalars['String']['output'];
@@ -56,31 +68,43 @@ export type FileMutationsUpdateArgs = {
   input: FileUpdateInput;
 };
 
-export type FilePermissionCreateInput = {
-  fileId: Scalars['UUID']['input'];
-  role: FileRole;
-  userId: Scalars['UUID']['input'];
-};
-
 export type FilePermissionMutations = {
   __typename?: 'FilePermissionMutations';
   create: FilePermissionType;
+  delete: Scalars['Boolean']['output'];
+  update: FilePermissionType;
 };
 
 
 export type FilePermissionMutationsCreateArgs = {
-  input: FilePermissionCreateInput;
+  input: CreateFilePermissionInput;
+};
+
+
+export type FilePermissionMutationsDeleteArgs = {
+  permissionId: Scalars['UUID']['input'];
+};
+
+
+export type FilePermissionMutationsUpdateArgs = {
+  input: UpdateFilePermissionInput;
 };
 
 export type FilePermissionQueries = {
   __typename?: 'FilePermissionQueries';
   get?: Maybe<FilePermissionType>;
   getAll: Array<FilePermissionType>;
+  getByFile: Array<FilePermissionType>;
 };
 
 
 export type FilePermissionQueriesGetArgs = {
-  id: Scalars['String']['input'];
+  id: Scalars['UUID']['input'];
+};
+
+
+export type FilePermissionQueriesGetByFileArgs = {
+  fileId: Scalars['UUID']['input'];
 };
 
 export type FilePermissionType = {
@@ -107,12 +131,6 @@ export type FileQueriesGetArgs = {
 export type FileQueriesGetAllArgs = {
   folderId?: InputMaybe<Scalars['UUID']['input']>;
 };
-
-export enum FileRole {
-  Editor = 'editor',
-  Owner = 'owner',
-  Viewer = 'viewer'
-}
 
 export type FileType = {
   __typename?: 'FileType';
@@ -164,15 +182,43 @@ export type FolderMutationsUpdateArgs = {
   input: FolderUpdateInput;
 };
 
+export type FolderPermissionMutations = {
+  __typename?: 'FolderPermissionMutations';
+  create: FolderPermissionType;
+  delete: Scalars['Boolean']['output'];
+  update: FolderPermissionType;
+};
+
+
+export type FolderPermissionMutationsCreateArgs = {
+  input: CreateFolderPermissionInput;
+};
+
+
+export type FolderPermissionMutationsDeleteArgs = {
+  permissionId: Scalars['UUID']['input'];
+};
+
+
+export type FolderPermissionMutationsUpdateArgs = {
+  input: UpdateFolderPermissionInput;
+};
+
 export type FolderPermissionQueries = {
   __typename?: 'FolderPermissionQueries';
   get?: Maybe<FolderPermissionType>;
   getAll: Array<FolderPermissionType>;
+  getByFolder: Array<FolderPermissionType>;
 };
 
 
 export type FolderPermissionQueriesGetArgs = {
-  id: Scalars['String']['input'];
+  id: Scalars['UUID']['input'];
+};
+
+
+export type FolderPermissionQueriesGetByFolderArgs = {
+  folderId: Scalars['UUID']['input'];
 };
 
 export type FolderPermissionType = {
@@ -210,6 +256,7 @@ export type FolderType = {
   name: Scalars['String']['output'];
   owner: UserType;
   parent?: Maybe<FolderType>;
+  path: Array<PathItemType>;
   permissions: Array<FolderPermissionType>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
@@ -240,12 +287,24 @@ export type LinkQueries = {
   __typename?: 'LinkQueries';
   get?: Maybe<LinkType>;
   getAll: Array<LinkType>;
+  getByFile: Array<LinkType>;
+  getByFolder: Array<LinkType>;
   getByToken: LinkType;
 };
 
 
 export type LinkQueriesGetArgs = {
-  id: Scalars['String']['input'];
+  id: Scalars['UUID']['input'];
+};
+
+
+export type LinkQueriesGetByFileArgs = {
+  fileId: Scalars['UUID']['input'];
+};
+
+
+export type LinkQueriesGetByFolderArgs = {
+  folderId: Scalars['UUID']['input'];
 };
 
 
@@ -278,7 +337,14 @@ export type Mutation = {
   file: FileMutations;
   filePermission: FilePermissionMutations;
   folder: FolderMutations;
+  folderPermission: FolderPermissionMutations;
   link: LinkMutations;
+};
+
+export type PathItemType = {
+  __typename?: 'PathItemType';
+  id?: Maybe<Scalars['UUID']['output']>;
+  name: Scalars['String']['output'];
 };
 
 export type Query = {
@@ -295,6 +361,17 @@ export enum Role {
   Owner = 'owner',
   Viewer = 'viewer'
 }
+
+export type UpdateFilePermissionInput = {
+  id: Scalars['UUID']['input'];
+  permissionId: Scalars['UUID']['input'];
+  role: Role;
+};
+
+export type UpdateFolderPermissionInput = {
+  permissionId: Scalars['UUID']['input'];
+  role: Role;
+};
 
 export type UserType = {
   __typename?: 'UserType';
@@ -324,6 +401,20 @@ export type GetFolderQueryVariables = Exact<{
 
 export type GetFolderQuery = { __typename?: 'Query', folder: { __typename?: 'FolderQueries', get?: { __typename?: 'FolderType', name: string, id: any, createdAt: any, updatedAt?: any | null, files: Array<{ __typename?: 'FileType', id: any, name: string, file: string, ext: string, mimeType: string, size: number, starred: boolean, createdAt: any, updatedAt?: any | null }>, folders: Array<{ __typename?: 'FolderType', id: any, name: string, createdAt: any, updatedAt?: any | null }> } | null } };
 
+export type GetFolderLinksQueryVariables = Exact<{
+  folderId: Scalars['UUID']['input'];
+}>;
+
+
+export type GetFolderLinksQuery = { __typename?: 'Query', link: { __typename?: 'LinkQueries', getByFolder: Array<{ __typename?: 'LinkType', createdAt: any, expiresAt?: any | null, id: any, isPublic: boolean, sharedWithSub?: string | null }> } };
+
+export type GetFolderPermissionsQueryVariables = Exact<{
+  folderId: Scalars['UUID']['input'];
+}>;
+
+
+export type GetFolderPermissionsQuery = { __typename?: 'Query', folderPermission: { __typename?: 'FolderPermissionQueries', getByFolder: Array<{ __typename?: 'FolderPermissionType', id: any, role: Role, user: { __typename?: 'UserType', email: string, id: any } }> } };
+
 export type GetRootQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -337,9 +428,19 @@ export type UpdateFolderMutationVariables = Exact<{
 
 export type UpdateFolderMutation = { __typename?: 'Mutation', folder: { __typename?: 'FolderMutations', update: { __typename?: 'FolderType', id: any, name: string, updatedAt?: any | null, createdAt: any } } };
 
+export type UpdateFolderPermissionMutationVariables = Exact<{
+  input: UpdateFolderPermissionInput;
+}>;
+
+
+export type UpdateFolderPermissionMutation = { __typename?: 'Mutation', folderPermission: { __typename?: 'FolderPermissionMutations', update: { __typename?: 'FolderPermissionType', id: any, role: Role, user: { __typename?: 'UserType', email: string, id: any } } } };
+
 
 export const CreateFolderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateFolder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"parentId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"folder"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"create"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"parentId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"parentId"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"files"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}},{"kind":"Field","name":{"kind":"Name","value":"size"}},{"kind":"Field","name":{"kind":"Name","value":"ext"}},{"kind":"Field","name":{"kind":"Name","value":"file"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"starred"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"folders"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CreateFolderMutation, CreateFolderMutationVariables>;
 export const DeleteFolderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteFolder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"folder"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"delete"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<DeleteFolderMutation, DeleteFolderMutationVariables>;
 export const GetFolderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetFolder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"folder"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"get"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"files"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"file"}},{"kind":"Field","name":{"kind":"Name","value":"ext"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}},{"kind":"Field","name":{"kind":"Name","value":"size"}},{"kind":"Field","name":{"kind":"Name","value":"starred"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"folders"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetFolderQuery, GetFolderQueryVariables>;
+export const GetFolderLinksDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetFolderLinks"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"folderId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"link"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getByFolder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"folderId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"folderId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"isPublic"}},{"kind":"Field","name":{"kind":"Name","value":"sharedWithSub"}}]}}]}}]}}]} as unknown as DocumentNode<GetFolderLinksQuery, GetFolderLinksQueryVariables>;
+export const GetFolderPermissionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetFolderPermissions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"folderId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"folderPermission"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getByFolder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"folderId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"folderId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetFolderPermissionsQuery, GetFolderPermissionsQueryVariables>;
 export const GetRootDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRoot"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"file"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getAll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"file"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}},{"kind":"Field","name":{"kind":"Name","value":"ext"}},{"kind":"Field","name":{"kind":"Name","value":"size"}},{"kind":"Field","name":{"kind":"Name","value":"starred"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"folder"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getAll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<GetRootQuery, GetRootQueryVariables>;
 export const UpdateFolderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateFolder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FolderUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"folder"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"update"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateFolderMutation, UpdateFolderMutationVariables>;
+export const UpdateFolderPermissionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateFolderPermission"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateFolderPermissionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"folderPermission"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"update"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]}}]} as unknown as DocumentNode<UpdateFolderPermissionMutation, UpdateFolderPermissionMutationVariables>;

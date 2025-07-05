@@ -1,0 +1,11 @@
+query GetFolderLinks($folderId: UUID!) {
+  link {
+    getByFolder(folderId: $folderId) {
+      createdAt
+      expiresAt
+      id
+      isPublic
+      sharedWithSub
+    }
+  }
+}

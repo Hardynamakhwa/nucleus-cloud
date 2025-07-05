@@ -1,0 +1,12 @@
+query GetFolderPermissions($folderId: UUID!) {
+  folderPermission {
+    getByFolder(folderId: $folderId) {
+      id
+      role
+      user {
+        email
+        id
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+mutation UpdateFolderPermission($input: UpdateFolderPermissionInput!) {
+  folderPermission {
+    update(
+      input: $input
+    ) {
+      id
+      role
+      user {
+        email
+        id
+      }
+    }
+  }
+}
