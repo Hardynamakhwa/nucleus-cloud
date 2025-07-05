@@ -1,21 +1,22 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { createStaticNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { PixelRatio } from "react-native";
+import { PixelRatio, StyleSheet } from "react-native";
+import { FileType, FolderType } from "./__generated__/schemas/graphql";
 import { useIsSignedIn, useIsSignedOut } from "./hooks/useAuth";
+import ContextMenuLayout from "./layouts/ContextMenuLayout";
+import ManageAccessLayout from "./layouts/ManageAccessLayout";
 import FolderPage from "./pages/Folder";
 import HomePage from "./pages/Home";
 import LoginPage from "./pages/Login";
-import ManageAccessPeopleTab from "./pages/ManageAccess/People";
-import ManageAccessLinksTab from "./pages/ManageAccess/Links";
 import RegisterPage from "./pages/Register";
 import SettingsGeneralTab from "./pages/Settings/General";
 import SettingsNotificationsTab from "./pages/Settings/Notifications";
 import SettingsSecurityTab from "./pages/Settings/Security";
 import ChangePasswordPage from "./pages/modals/ChangePassword";
 import SearchPage from "./pages/modals/Search";
-import {FileType, FolderType} from "./__generated__/schemas/graphql";
-import ManageAccessLayout from "./layouts/ManageAccessLayout";
+import ManagePermissionsLinksTab from "./pages/ManagePermissions/Links";
+import ManagePermissionsPeopleTab from "./pages/ManagePermissions/People";
 
 export type RootStackParamList = {
     Login: undefined;
@@ -26,7 +27,7 @@ export type RootStackParamList = {
         name?: string;
     };
     Settings: undefined;
-    ManageAccess: FileType|FolderType;
+    ManagePermissions: FileType | FolderType;
     ChangePassword: undefined;
     Search: undefined;
 };
@@ -50,7 +51,7 @@ const SettingsTabs = createMaterialTopTabNavigator({
         tabBarItemStyle: { width: "auto" },
         tabBarStyle: {
             backgroundColor: theme.colors.background,
-            borderBottomWidth: 1,
+            borderBottomWidth: StyleSheet.hairlineWidth,
             borderBottomColor: theme.colors.border,
             marginHorizontal: 16,
         },
@@ -58,30 +59,31 @@ const SettingsTabs = createMaterialTopTabNavigator({
     initialRouteName: "SettingsGeneral",
 });
 
-const ManageAccessTabs = createMaterialTopTabNavigator({
+const ManagePermissionsTabs = createMaterialTopTabNavigator({
     screens: {
-        ManageAccessPeople: {
-            screen: ManageAccessPeopleTab,
+        ManagePermissionsPeople: {
+            screen: ManagePermissionsPeopleTab,
             options: { title: "People" },
         },
-        ManageAccessLinks: {
-            screen: ManageAccessLinksTab,
+        ManagePermissionsLinks: {
+            screen: ManagePermissionsLinksTab,
             options: { title: "Links" },
         },
     },
     screenOptions: ({ theme }) => ({
         tabBarItemStyle: { width: "auto" },
+        tabBarLabelStyle: {
+            fontFamily: "MontrealMedium",
+        },
         tabBarStyle: {
             backgroundColor: theme.colors.background,
-            borderBottomWidth: 1,
+            borderBottomWidth: StyleSheet.hairlineWidth,
             borderBottomColor: theme.colors.border,
             marginHorizontal: 16,
         },
     }),
-    initialRouteName: "ManageAccessPeople",
-    layout(props) {
-        return ManageAccessLayout(props);
-    },
+    initialRouteName: "ManagePermissionsPeople",
+    layout: ManageAccessLayout,
 });
 
 const RootStack = createNativeStackNavigator({
@@ -106,12 +108,16 @@ const RootStack = createNativeStackNavigator({
             screens: {
                 Home: {
                     screen: HomePage,
-                    opitions: { title: "" },
-
+                    options: { title: "" },
                 },
-                Folder: FolderPage,
+                Folder: {
+                    screen: FolderPage,
+                },
                 Settings: SettingsTabs,
-                ManageAccess: ManageAccessTabs,
+                ManagePermissions: {
+                    screen: ManagePermissionsTabs,
+                    options: { title: "" },
+                },
                 ChangePassword: {
                     screen: ChangePasswordPage,
                     options: { presentation: "modal" },
@@ -124,6 +130,7 @@ const RootStack = createNativeStackNavigator({
                     },
                 },
             },
+
             screenOptions: {
                 animation: "slide_from_right",
             },
@@ -137,6 +144,7 @@ const RootStack = createNativeStackNavigator({
             backgroundColor: theme.colors.background,
         },
     }),
+    layout: ContextMenuLayout,
 });
 
 export const Navigation = createStaticNavigation(RootStack);
