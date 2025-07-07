@@ -17,6 +17,7 @@ import ChangePasswordPage from "./pages/modals/ChangePassword";
 import SearchPage from "./pages/modals/Search";
 import ManagePermissionsLinksTab from "./pages/ManagePermissions/Links";
 import ManagePermissionsPeopleTab from "./pages/ManagePermissions/People";
+import Share from "./pages/modals/Share";
 
 export type RootStackParamList = {
     Login: undefined;
@@ -28,6 +29,9 @@ export type RootStackParamList = {
     };
     Settings: undefined;
     ManagePermissions: FileType | FolderType;
+    Share: {
+        resource: FileType | FolderType;
+    };
     ChangePassword: undefined;
     Search: undefined;
 };
@@ -113,26 +117,26 @@ const RootStack = createNativeStackNavigator({
                 Folder: {
                     screen: FolderPage,
                 },
-                Settings: SettingsTabs,
                 ManagePermissions: {
                     screen: ManagePermissionsTabs,
                     options: { title: "" },
                 },
-                ChangePassword: {
-                    screen: ChangePasswordPage,
-                    options: { presentation: "modal" },
-                },
-                Search: {
-                    screen: SearchPage,
-                    options: {
-                        presentation: "modal",
-                        animation: "fade",
-                    },
-                },
+                Settings: SettingsTabs,
+                ChangePassword: ChangePasswordPage,
             },
-
             screenOptions: {
                 animation: "slide_from_right",
+            },
+        },
+        LoggedInModals: {
+            if: useIsSignedIn,
+            screens: {
+                Share: Share,
+                Search: SearchPage,
+            },
+            screenOptions: {
+                presentation: "modal",
+                animation: "fade",
             },
         },
     },
