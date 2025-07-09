@@ -1,0 +1,12 @@
+mutation CreateFolderPermission($input: CreateFolderPermissionInput!) {
+    folderPermission {
+        create(input: $input) {
+            id
+            role
+            user {
+                id
+                email
+            }
+        }
+    }
+}

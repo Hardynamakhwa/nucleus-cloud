@@ -7,9 +7,12 @@ import {
     InMemoryCache,
 } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
+import { RetryLink } from "@apollo/client/link/retry";
 import { mergeDeep } from "@apollo/client/utilities";
-import { AuthStore } from "../stores/auth";
+import { isAxiosError } from "axios";
 import api from "./axios";
+import {AuthStore} from "../stores/auth";
+import store from "../stores";
 
 const httpLink = new HttpLink({
     uri: "http://localhost:8000/graphql",
@@ -51,7 +54,12 @@ const errorLink = onError(({ graphQLErrors, forward, operation }) => {
                         tokenType: data.token_type,
                     });
                     return data.access_token;
-                } catch {
+                } catch (e) {
+                    if (isAxiosError(e)) {
+                        if (e.response?.status === 401) {
+                            store.auth.logout();
+                        }
+                    }
                     return null;
                 }
             })()
@@ -70,8 +78,20 @@ const errorLink = onError(({ graphQLErrors, forward, operation }) => {
     }
 });
 
+const retryLink = new RetryLink({
+    delay: {
+        initial: 300,
+        max: Infinity,
+        jitter: true,
+    },
+    attempts: {
+        max: 5,
+        retryIf: (error) => !!error.networkError,
+    },
+});
+
 const client = new ApolloClient({
-    link: from([errorLink, authLink, httpLink]),
+    link: from([retryLink, errorLink, authLink, httpLink]),
     cache: new InMemoryCache({
         typePolicies: {
             Query: {

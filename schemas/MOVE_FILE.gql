@@ -1,0 +1,11 @@
+mutation moveFile($id: UUID!, $folderId: UUID!) {
+    file {
+        update(id: $id, input: { folderId: $folderId }) {
+            id
+            name
+            folder {
+                id
+            }
+        }
+    }
+}

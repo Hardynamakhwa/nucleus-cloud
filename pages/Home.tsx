@@ -109,6 +109,11 @@ export default function HomePage() {
                 case "manage-permissions":
                     navigation.navigate("ManagePermissions", item);
                     break;
+                case "share":
+                    navigation.navigate("Share", {
+                        resource: item,
+                    });
+                    break;
             }
         });
     };
@@ -156,7 +161,7 @@ export default function HomePage() {
                     </View>
                 </RectButton>
                 <RectButton onPress={() => setShowCreateInput((v) => !v)}>
-                    <View className="flex-row items-center gap-x-3 rounded-full border border-text/65 p-2 px-4">
+                    <View className="flex-row items-center gap-x-3 rounded-full border border-neutral-300 p-2 px-4 dark:border-neutral-700">
                         <PlusIcon
                             size={20}
                             color={theme.colors.text}

@@ -12,7 +12,7 @@ export default function CheckIcon({
         <Svg
             viewBox="0 0 24 24"
             fill="none"
-            strokeWidth="2"
+            strokeWidth="2.5"
             stroke={color}
             height={size * PixelRatio.getFontScale()}
             width={size * PixelRatio.getFontScale()}

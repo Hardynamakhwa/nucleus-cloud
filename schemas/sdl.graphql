@@ -32,7 +32,7 @@ type FileMutations {
 type FilePermissionMutations {
   create(input: CreateFilePermissionInput!): FilePermissionType!
   update(input: UpdateFilePermissionInput!): FilePermissionType!
-  delete(permissionId: UUID!): Boolean!
+  delete(permissionId: UUID!): DeleteResponse!
 }
 
 type FilePermissionQueries {
@@ -89,7 +89,7 @@ type FolderMutations {
 type FolderPermissionMutations {
   create(input: CreateFolderPermissionInput!): FolderPermissionType!
   update(input: UpdateFolderPermissionInput!): FolderPermissionType!
-  delete(permissionId: UUID!): Boolean!
+  delete(permissionId: UUID!): DeleteResponse!
 }
 
 type FolderPermissionQueries {

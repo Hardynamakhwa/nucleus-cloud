@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ActivityIndicator, FlatList, View } from "react-native";
 import Text from "../../components/Text";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../Router";
-import { useQuery } from "@apollo/client";
-import { useTheme, useNavigation } from "@react-navigation/native";
+import { useLazyQuery, useQuery } from "@apollo/client";
+import { useTheme, useNavigation, useRoute } from "@react-navigation/native";
 import { GetFolderLinksDocument } from "../../__generated__/schemas/graphql";
 import dayjs from "dayjs";
 import { RectButton } from "react-native-gesture-handler";
+import { LinkIcon } from "react-native-heroicons/outline";
 
 type managePermissionsNavigation = NativeStackNavigationProp<
     RootStackParamList,
@@ -18,8 +19,9 @@ const Links = () => {
     const navigation = useNavigation<managePermissionsNavigation>();
     const parentState = navigation.getParent()?.getState();
     const params = parentState?.routes[parentState.index].params;
+    const route = useRoute();
 
-    const { data, loading } = useQuery(GetFolderLinksDocument, {
+    const [q, { data, loading }] = useLazyQuery(GetFolderLinksDocument, {
         variables: {
             folderId: params?.id,
         },

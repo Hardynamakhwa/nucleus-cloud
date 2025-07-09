@@ -6,6 +6,7 @@ import {
     runInAction,
 } from "mobx";
 import * as SecureStore from "expo-secure-store";
+import client from "../services/graphql";
 
 export interface User {
     id?: string;
@@ -73,6 +74,7 @@ export class AuthStore {
     }
     async logout() {
         try {
+            await client.clearStore();
             await AuthStore.deleteToken();
             await this.deleteUser();
         } finally {
@@ -119,3 +121,4 @@ export class AuthStore {
         await SecureStore.deleteItemAsync("token");
     }
 }
+

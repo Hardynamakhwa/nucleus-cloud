@@ -47,14 +47,14 @@ export default function ListItem(
                 )}
                 <View
                     className={clsx(
-                        "flex-1 flex-row items-center gap-x-4 border-b border-l-2 px-2",
+                        "flex-1 flex-row items-center gap-x-4 border-b border-l-4 px-2",
                         {
                             "py-3": !props.compact,
                             "py-1.5": props.compact,
                             "border-t": props.isFirst,
                         },
                         (props as ListItemPropsWithCheck).checked ?
-                            "border-b-transparent border-l-indigo-500 bg-indigo-500/50"
+                            "border-b-transparent border-l-neutral-500 bg-neutral-500/50"
                         :   "border-b-neutral-800 border-l-transparent"
                     )}
                 >

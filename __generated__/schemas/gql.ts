@@ -15,6 +15,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 type Documents = {
     "mutation CreateFolder($name: String!, $parentId: UUID) {\n  folder {\n    create(input: {name: $name, parentId: $parentId}) {\n      id\n      name\n      createdAt\n      updatedAt\n      files {\n        id\n        name\n        mimeType\n        size\n        ext\n        file\n        createdAt\n        starred\n        updatedAt\n      }\n      folders {\n        id\n        name\n        createdAt\n        updatedAt\n      }\n    }\n  }\n}": typeof types.CreateFolderDocument,
+    "mutation CreateFolderPermission($input: CreateFolderPermissionInput!) {\n  folderPermission {\n    create(input: $input) {\n      id\n      role\n      user {\n        id\n        email\n      }\n    }\n  }\n}": typeof types.CreateFolderPermissionDocument,
     "mutation DeleteFolder($id: UUID!) {\n  folder {\n    delete(id: $id) {\n      success\n      message\n    }\n  }\n}": typeof types.DeleteFolderDocument,
     "query GetFolder($id: UUID!) {\n  folder {\n    get(id: $id) {\n      name\n      id\n      createdAt\n      updatedAt\n      files {\n        id\n        name\n        file\n        ext\n        mimeType\n        size\n        starred\n        createdAt\n        updatedAt\n      }\n      folders {\n        id\n        name\n        createdAt\n        updatedAt\n      }\n    }\n  }\n}": typeof types.GetFolderDocument,
     "query GetFolderLinks($folderId: UUID!) {\n  link {\n    getByFolder(folderId: $folderId) {\n      createdAt\n      expiresAt\n      id\n      isPublic\n      sharedWithSub\n    }\n  }\n}": typeof types.GetFolderLinksDocument,
@@ -25,6 +26,7 @@ type Documents = {
 };
 const documents: Documents = {
     "mutation CreateFolder($name: String!, $parentId: UUID) {\n  folder {\n    create(input: {name: $name, parentId: $parentId}) {\n      id\n      name\n      createdAt\n      updatedAt\n      files {\n        id\n        name\n        mimeType\n        size\n        ext\n        file\n        createdAt\n        starred\n        updatedAt\n      }\n      folders {\n        id\n        name\n        createdAt\n        updatedAt\n      }\n    }\n  }\n}": types.CreateFolderDocument,
+    "mutation CreateFolderPermission($input: CreateFolderPermissionInput!) {\n  folderPermission {\n    create(input: $input) {\n      id\n      role\n      user {\n        id\n        email\n      }\n    }\n  }\n}": types.CreateFolderPermissionDocument,
     "mutation DeleteFolder($id: UUID!) {\n  folder {\n    delete(id: $id) {\n      success\n      message\n    }\n  }\n}": types.DeleteFolderDocument,
     "query GetFolder($id: UUID!) {\n  folder {\n    get(id: $id) {\n      name\n      id\n      createdAt\n      updatedAt\n      files {\n        id\n        name\n        file\n        ext\n        mimeType\n        size\n        starred\n        createdAt\n        updatedAt\n      }\n      folders {\n        id\n        name\n        createdAt\n        updatedAt\n      }\n    }\n  }\n}": types.GetFolderDocument,
     "query GetFolderLinks($folderId: UUID!) {\n  link {\n    getByFolder(folderId: $folderId) {\n      createdAt\n      expiresAt\n      id\n      isPublic\n      sharedWithSub\n    }\n  }\n}": types.GetFolderLinksDocument,
@@ -52,6 +54,10 @@ export function graphql(source: string): unknown;
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "mutation CreateFolder($name: String!, $parentId: UUID) {\n  folder {\n    create(input: {name: $name, parentId: $parentId}) {\n      id\n      name\n      createdAt\n      updatedAt\n      files {\n        id\n        name\n        mimeType\n        size\n        ext\n        file\n        createdAt\n        starred\n        updatedAt\n      }\n      folders {\n        id\n        name\n        createdAt\n        updatedAt\n      }\n    }\n  }\n}"): (typeof documents)["mutation CreateFolder($name: String!, $parentId: UUID) {\n  folder {\n    create(input: {name: $name, parentId: $parentId}) {\n      id\n      name\n      createdAt\n      updatedAt\n      files {\n        id\n        name\n        mimeType\n        size\n        ext\n        file\n        createdAt\n        starred\n        updatedAt\n      }\n      folders {\n        id\n        name\n        createdAt\n        updatedAt\n      }\n    }\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "mutation CreateFolderPermission($input: CreateFolderPermissionInput!) {\n  folderPermission {\n    create(input: $input) {\n      id\n      role\n      user {\n        id\n        email\n      }\n    }\n  }\n}"): (typeof documents)["mutation CreateFolderPermission($input: CreateFolderPermissionInput!) {\n  folderPermission {\n    create(input: $input) {\n      id\n      role\n      user {\n        id\n        email\n      }\n    }\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

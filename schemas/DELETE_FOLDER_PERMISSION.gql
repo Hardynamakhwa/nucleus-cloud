@@ -1,0 +1,8 @@
+mutation DeleteFolderPermission($id: UUID!) {
+  folderPermission {
+    delete(permissionId: $id) {
+      success
+      message
+    }
+  }
+}

@@ -10,7 +10,6 @@ import { FolderUnionFile } from "./List";
 import { View } from "react-native";
 import dayjs from "dayjs";
 import { RectButton } from "react-native-gesture-handler";
-import { UsersIcon } from "react-native-heroicons/outline";
 
 export default function ListItemContextMenu({
     ref,
@@ -56,16 +55,82 @@ export default function ListItemContextMenu({
                     <Text variant="h2">{item?.name}</Text>
                     <Text>{date}</Text>
                 </View>
-                <RectButton onPress={() => onSelect("manage-permissions")}>
-                    <View className="flex-row items-center gap-x-4 p-4">
-                        <UsersIcon
-                            size={20}
-                            color={theme.colors.text}
-                        />
-                        <Text variant="label">Manage permissions</Text>
-                    </View>
-                </RectButton>
+                <Option
+                    onSelect={onSelect}
+                    value={"add-to-favourites"}
+                    label="Add To Favourites"
+                />
+                <Option
+                    onSelect={onSelect}
+                    value={"get-link"}
+                    label="Get Link"
+                />
+                <Option
+                    onSelect={onSelect}
+                    value={"download"}
+                    label="Download"
+                />
+                <Option
+                    onSelect={onSelect}
+                    value={"make-available-offline"}
+                    label="Make Available Offline"
+                />
+                <Option
+                    onSelect={onSelect}
+                    value={"share"}
+                    label="Share"
+                />
+                <Option
+                    onSelect={onSelect}
+                    value={"manage-permissions"}
+                    label="Manage Permission"
+                />
+                <View className="border-b border-border my-2" />
+                <Option
+                    onSelect={onSelect}
+                    value={"rename"}
+                    label="Rename"
+                />
+                <Option
+                    onSelect={onSelect}
+                    value={"copy"}
+                    label="Copy"
+                />
+                <Option
+                    onSelect={onSelect}
+                    value={"move"}
+                    label="Move"
+                />
+                <Option
+                    onSelect={onSelect}
+                    value={"move-to-trash"}
+                    label="Move To Trash"
+                />
+                <View className="border-b border-border my-2" />
+                <Option
+                    onSelect={onSelect}
+                    value={"info"}
+                    label="Info"
+                />
             </BottomSheetView>
         </BottomSheet>
+    );
+}
+
+function Option({
+    onSelect,
+    label,
+    value,
+}: {
+    onSelect(value: string): void;
+    label: string;
+    value: string;
+}) {
+    return (
+        <RectButton onPress={() => onSelect(value)}>
+            <View className="p-4">
+                <Text variant="label">{label}</Text>
+            </View>
+        </RectButton>
     );
 }

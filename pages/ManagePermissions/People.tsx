@@ -1,9 +1,11 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { ActivityIndicator, FlatList, View } from "react-native";
 import Text from "../../components/Text";
 import { useMutation, useQuery, NetworkStatus } from "@apollo/client";
 import { RectButton } from "react-native-gesture-handler";
 import {
+    FileType,
+    FolderType,
     GetFolderPermissionsDocument,
     Role,
     UpdateFolderPermissionDocument,
@@ -16,6 +18,7 @@ import { RootStackParamList } from "../../Router";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import PopupMenu from "../../components/PopupMenu";
 import { EyeIcon, PencilSquareIcon } from "react-native-heroicons/outline";
+import UserPlusIcon from "../../components/icons/UserPlusIcon";
 
 type managePermissionsNavigation = NativeStackNavigationProp<
     RootStackParamList,
@@ -30,60 +33,25 @@ const ROLE_OPTIONS = [
     { icon: PencilSquareIcon, label: "editor", value: Role.Editor },
 ] as const;
 
-const PeopleItem = React.memo(({ item, onRoleChange, isOwner }: { item: any, onRoleChange: (data: UpdateFolderPermissionInput) => void, isOwner: boolean }) => {
-    return <RectButton>
-        <View className="flex-row items-center gap-x-4 px-4 py-2">
-            <View>
-                <GravatarImage
-                    email={item.user.email}
-                    size={38}
-                />
-            </View>
-            <View className="flex-1">
-                <Text variant="label">{item.user.email}</Text>
-                {!isOwner && (
-                    <View className="opacity-65">
-                        <Text variant="subtitle">
-                            {dayjs().format(
-                                "[On] MMM DD ddd, YYYY [at] HH:mm"
-                            )}
-                        </Text>
-                    </View>
-                )}
-            </View>
-            {isOwner ?
-                <Text variant="label">{item.role}</Text>
-                : <PopupMenu
-                    onOptionSelect={(role) =>
-                        onRoleChange({
-                            permissionId: item.id,
-                            role: role as Role,
-                        })
-                    }
-                    items={ROLE_OPTIONS}
-                >
-                    <Text>{item.role}</Text>
-                </PopupMenu>
-            }
-        </View>
-    </RectButton>
-});
-
-
 function People() {
     const theme = useTheme();
     const navigation = useNavigation<managePermissionsNavigation>();
-    const folderId = useMemo(() => {
+    const folder = useMemo(() => {
         const parentState = navigation.getParent()?.getState();
-        return parentState?.routes[parentState.index].params?.id;
+        return parentState?.routes[parentState.index].params as
+            | FolderType
+            | FileType;
     }, [navigation]);
 
-    const { data, loading, refetch, networkStatus } = useQuery(GetFolderPermissionsDocument, {
-        variables: {
-            folderId,
-        },
-        notifyOnNetworkStatusChange: true,
-    });
+    const { data, loading, refetch, networkStatus } = useQuery(
+        GetFolderPermissionsDocument,
+        {
+            variables: {
+                folderId: folder.id,
+            },
+            notifyOnNetworkStatusChange: true,
+        }
+    );
 
     const [updatePermission] = useMutation(UpdateFolderPermissionDocument, {
         update(cache, { data }) {
@@ -91,7 +59,10 @@ function People() {
             if (!updated) return;
 
             cache.modify({
-                id: cache.identify({ __typename: "FolderPermissionType", id: updated.id }),
+                id: cache.identify({
+                    __typename: "FolderPermissionType",
+                    id: updated.id,
+                }),
                 fields: {
                     role() {
                         return updated.role;
@@ -112,36 +83,66 @@ function People() {
                             __typename: typename("UserType"),
                             email: "", // Will be populated from cache
                             id: "",
-                        }
-                    }
+                        },
+                    },
                 },
             };
         },
     });
 
-    const changePermissionHandler = async (
-        data: UpdateFolderPermissionInput
-    ) => {
-        await updatePermission({
-            variables: {
-                input: data,
+    const changePermissionHandler = useCallback(
+        (data: UpdateFolderPermissionInput) => {
+            updatePermission({
+                variables: {
+                    input: data,
+                },
+            });
+        },
+        [updatePermission]
+    );
+
+    const renderItem = useCallback(
+        ({ item }: { item: any }) => (
+            <PeopleItem
+                item={item}
+                onRoleChange={changePermissionHandler}
+                isOwner={item.role === Role.Owner}
+            />
+        ),
+        [changePermissionHandler]
+    );
+
+    const getItemLayout = useCallback(
+        (_data: any, index: number) => ({
+            length: ITEM_HEIGHT,
+            offset: ITEM_HEIGHT * index,
+            index,
+        }),
+        []
+    );
+
+    useEffect(() => {
+        navigation.getParent()?.setOptions({
+            headerRight() {
+                return (
+                    <RectButton
+                        onPress={() => {
+                            navigation.navigate("Share", {
+                                resource: folder,
+                            });
+                        }}
+                    >
+                        <View className="p-2">
+                            <UserPlusIcon
+                                size={22}
+                                color={theme.colors.text}
+                            />
+                        </View>
+                    </RectButton>
+                );
             },
         });
-    };
-
-    const renderItem = useCallback(({ item }: { item: any }) => (
-        <PeopleItem
-            item={item}
-            onRoleChange={changePermissionHandler}
-            isOwner={item.role === Role.Owner}
-        />
-    ), [changePermissionHandler]);
-
-    const getItemLayout = useCallback((_data: any, index: number) => ({
-        length: ITEM_HEIGHT,
-        offset: ITEM_HEIGHT * index,
-        index,
-    }), []);
+    }, [folder, navigation, theme.colors.text]);
 
     const contents = data?.folderPermission.getByFolder ?? [];
 
@@ -161,9 +162,58 @@ function People() {
                             color={theme.colors.primary}
                         />
                     </View>
-                    : null
+                :   null
             }
         />
+    );
+}
+
+const PeopleItem = ({
+    item,
+    onRoleChange,
+    isOwner,
+}: {
+    item: any;
+    onRoleChange: (data: UpdateFolderPermissionInput) => void;
+    isOwner: boolean;
+}) => {
+    return (
+        <RectButton>
+            <View className="flex-row items-center gap-x-4 px-4 py-2">
+                <View>
+                    <GravatarImage
+                        email={item.user.email}
+                        size={38}
+                    />
+                </View>
+                <View className="flex-1">
+                    <Text variant="label">{item.user.email}</Text>
+                    {!isOwner && (
+                        <View className="opacity-65">
+                            <Text variant="subtitle">
+                                {dayjs().format(
+                                    "[On] MMM DD ddd, YYYY [at] HH:mm"
+                                )}
+                            </Text>
+                        </View>
+                    )}
+                </View>
+                {isOwner ?
+                    <Text variant="label">{item.role}</Text>
+                :   <PopupMenu
+                        onOptionSelect={(role) =>
+                            onRoleChange({
+                                permissionId: item.id,
+                                role: role as Role,
+                            })
+                        }
+                        items={ROLE_OPTIONS}
+                    >
+                        <Text>{item.role}</Text>
+                    </PopupMenu>
+                }
+            </View>
+        </RectButton>
     );
 };
 

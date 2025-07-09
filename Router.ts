@@ -5,7 +5,7 @@ import { PixelRatio, StyleSheet } from "react-native";
 import { FileType, FolderType } from "./__generated__/schemas/graphql";
 import { useIsSignedIn, useIsSignedOut } from "./hooks/useAuth";
 import ContextMenuLayout from "./layouts/ContextMenuLayout";
-import ManageAccessLayout from "./layouts/ManageAccessLayout";
+import ManagePermissionsLayout from "./layouts/ManagePermissionsLayout";
 import FolderPage from "./pages/Folder";
 import HomePage from "./pages/Home";
 import LoginPage from "./pages/Login";
@@ -28,7 +28,7 @@ export type RootStackParamList = {
         name?: string;
     };
     Settings: undefined;
-    ManagePermissions: FileType | FolderType;
+    ManagePermissions: { resource: FileType | FolderType };
     Share: {
         resource: FileType | FolderType;
     };
@@ -87,7 +87,7 @@ const ManagePermissionsTabs = createMaterialTopTabNavigator({
         },
     }),
     initialRouteName: "ManagePermissionsPeople",
-    layout: ManageAccessLayout,
+    layout: ManagePermissionsLayout,
 });
 
 const RootStack = createNativeStackNavigator({
@@ -120,6 +120,9 @@ const RootStack = createNativeStackNavigator({
                 ManagePermissions: {
                     screen: ManagePermissionsTabs,
                     options: { title: "" },
+                    initialParams: {
+                        resource: null,
+                    },
                 },
                 Settings: SettingsTabs,
                 ChangePassword: ChangePasswordPage,
