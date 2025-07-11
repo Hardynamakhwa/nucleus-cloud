@@ -3,7 +3,7 @@ import Animated, { FadeInDown, FadeOutDown } from "react-native-reanimated";
 import Text from "./Text";
 import React from "react";
 
-type SnackbarProps = {
+export type SnackbarProps = {
     message: string;
     action?: string;
     onAction?: () => void;
@@ -33,7 +33,7 @@ function Snackbar({
             testID="snackbar"
             entering={FadeInDown.duration(animationDuration)}
             exiting={FadeOutDown.duration(animationDuration)}
-            className={`flex-row items-center gap-x-2 p-2.5 ${variantStyles[variant]}`}
+            className={`absolute bottom-6 left-4 right-4 flex-row items-center gap-x-2 rounded-lg border p-4 ${variantStyles[variant]}`}
         >
             <View className="flex-1">
                 <Text>{message}</Text>
