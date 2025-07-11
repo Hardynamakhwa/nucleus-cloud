@@ -1,4 +1,4 @@
-import { createContext, useCallback, useRef, useState } from "react";
+import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import ListItemContextMenu from "../partials/ListItemContextMenu";
 import BottomSheet from "@gorhom/bottom-sheet";
 import { FolderUnionFile } from "../partials/List";
@@ -23,9 +23,12 @@ export default function ContextMenuLayout({
         setItem(item);
         return new Promise((resolve) => {
             resolver.current = resolve;
-            ref.current?.expand();
         });
     }, []);
+
+    useEffect(() => {
+        if (item) ref.current?.expand();
+    }, [item]);
 
     const onSelect = (value: any) => {
         resolver.current?.(value);

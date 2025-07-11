@@ -15,7 +15,7 @@ export default function NewEntryInput(props: {
             <TextInput
                 value={inputValue}
                 onChangeText={setInputValue}
-                className="flex-1 p-2 py-1.5 text-lg color-text focus:border-2 focus:border-primary"
+                className="flex-1 p-2 py-1.5 text-lg color-text focus:border focus:border-text"
                 numberOfLines={1}
                 multiline={false}
                 autoFocus

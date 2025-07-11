@@ -15,6 +15,8 @@ import { colorScheme } from "./stores/ui";
 import { darkTheme, lightTheme } from "./themes/schemes";
 import * as SplashScreen from "expo-splash-screen";
 import { setBackgroundColorAsync } from "expo-system-ui";
+import { ThemeProvider } from "@react-navigation/native";
+import FeedbackProvider from "./providers/FeedbackProvider";
 
 SplashScreen.preventAutoHideAsync();
 function App() {
@@ -75,14 +77,18 @@ function App() {
     return (
         <SignInProvider>
             <ApolloProvider client={client}>
-                <GestureHandlerRootView
-                    onLayout={onLayoutRootView}
-                    style={{ flex: 1 }}
-                >
-                    <MenuProvider>
-                        <Navigation theme={theme} />
-                    </MenuProvider>
-                </GestureHandlerRootView>
+                <ThemeProvider value={theme}>
+                    <FeedbackProvider>
+                        <GestureHandlerRootView
+                            onLayout={onLayoutRootView}
+                            style={{ flex: 1 }}
+                        >
+                            <MenuProvider>
+                                <Navigation theme={theme} />
+                            </MenuProvider>
+                        </GestureHandlerRootView>
+                    </FeedbackProvider>
+                </ThemeProvider>
             </ApolloProvider>
         </SignInProvider>
     );

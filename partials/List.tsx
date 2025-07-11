@@ -4,18 +4,18 @@ import {
     RefreshControl,
     View,
     ActivityIndicator,
+    Text as RNText,
 } from "react-native";
 import store from "../stores";
 import { ReactNode, useMemo } from "react";
 import { FileType, FolderType } from "../__generated__/schemas/graphql";
 import ListItem from "./ListItem";
 import Text from "../components/Text";
-import { RouteProp, useRoute, useTheme } from "@react-navigation/native";
+import { useTheme } from "@react-navigation/native";
 import { FolderIcon } from "react-native-heroicons/outline";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import NewEntryInput from "../components/NewEntryInput";
 import ListHeader from "../components/ListHeader";
-import { RootStackParamList } from "../Router";
 
 export type FolderUnionFile = FolderType | FileType;
 
@@ -31,16 +31,15 @@ interface ListProps {
     onLongTap?(item: FolderUnionFile): void;
     onSelectionOption?(option: any): void;
     header?: ReactNode;
-    editing?: string;
+    renaming?: string | null;
+    onRequestRenameDismiss?(): void;
+    onSubmitRename?(prams: { id: string; value: string }): void;
     onRequestStopEditing?(): void;
     onSubmitEditing?(value: string): void;
 }
 
-type routeType = RouteProp<RootStackParamList>;
-
 function List(props: ListProps) {
     const theme = useTheme();
-    const route = useRoute<routeType>();
     const renderItem = ({ item }: { item: FolderUnionFile }) => {
         return (
             <ListItem
@@ -53,9 +52,11 @@ function List(props: ListProps) {
                         />
                     :   undefined
                 }
-                editing={props.editing === item.id}
-                onSubmitEditing={props.onSubmitEditing}
-                onRequestStopEditing={props.onRequestStopEditing}
+                editing={props.renaming === item.id}
+                onSubmitEditing={(value) =>
+                    props.onSubmitRename?.({ id: item.id, value })
+                }
+                onRequestStopEditing={props.onRequestRenameDismiss}
                 onTap={() => props.onTap?.(item)}
                 onLongTap={() => props.onLongTap?.(item)}
                 checked={props.selection?.has(item.id)}
@@ -81,12 +82,25 @@ function List(props: ListProps) {
             keyExtractor={({ id }) => `folder-list-item-${id}`}
             ListEmptyComponent={
                 !props.loading && !props.newEntryInputShown ?
-                    <View className="mt-6 items-center justify-center p-4 opacity-50">
-                        <Text variant="h4">
-                            {route.name === "Folder" ?
-                                "This folder is empty"
-                            :   "No contents to show"}
-                        </Text>
+                    <View className="my-auto mt-6 flex-1 items-center justify-center p-4 opacity-85">
+                        <RNText className="text-center">
+                            <Text>
+                                <View className="border-b border-transparent">
+                                    <Text>This folder is empty</Text>
+                                </View>{" "}
+                                <View className="border-b border-dotted border-text">
+                                    <Text variant="label">upload</Text>
+                                </View>{" "}
+                                <View className="border-b border-transparent">
+                                    <Text>or</Text>
+                                </View>{" "}
+                                <View className="border-b border-dotted border-text">
+                                    <Text variant="label">
+                                        create a new folder
+                                    </Text>
+                                </View>
+                            </Text>
+                        </RNText>
                     </View>
                 :   null
             }
@@ -96,7 +110,9 @@ function List(props: ListProps) {
                         <View className="p-4">{props.header}</View>
                     )}
                     <>
-                        <ListHeader />
+                        {!props.loading && props.data.length ?
+                            <ListHeader />
+                        :   null}
                         <View className="overflow-hidden">
                             {props.newEntryInputShown && (
                                 <NewEntryInput

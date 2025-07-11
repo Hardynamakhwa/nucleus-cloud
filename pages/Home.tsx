@@ -2,7 +2,7 @@
 import symmetricDifference from "set.prototype.symmetricdifference";
 import { useMutation, useQuery } from "@apollo/client";
 import List, { FolderUnionFile } from "../partials/List";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../Router";
@@ -18,7 +18,6 @@ import { ArrowsUpDownIcon, PlusIcon } from "react-native-heroicons/outline";
 import Text from "../components/Text";
 import { folderService } from "../services/folder.actions";
 import SearchIcon from "../components/icons/SearchIcon";
-import UserPlusIcon from "../components/icons/UserPlusIcon";
 import useContextMenu from "../hooks/useContextMenu";
 
 type HomeNavigationProps = NativeStackNavigationProp<RootStackParamList>;
@@ -97,17 +96,22 @@ export default function HomePage() {
         refetch().finally(() => setRefreshing(false));
     };
 
-    const tapHandler = (item: any) => {
-        navigation.push("Folder", {
-            id: item.id,
-            name: item.name,
-        });
+    const goToFolder = (item: any) => {
+        if (selected.size === 0)
+            navigation.push("Folder", {
+                id: item.id,
+                name: item.name,
+            });
+        else selectHandler(item.id);
     };
+
     const longTapHandler = (item: any) => {
         itemContext.show(item).then((value) => {
             switch (value) {
                 case "manage-permissions":
-                    navigation.navigate("ManagePermissions", item);
+                    navigation.navigate("ManagePermissions", {
+                        resource: item,
+                    });
                     break;
                 case "share":
                     navigation.navigate("Share", {
@@ -133,13 +137,7 @@ export default function HomePage() {
                         onPress={() => navigation.navigate("Search")}
                     >
                         <SearchIcon
-                            size={20}
-                            color={tintColor}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity className="p-2">
-                        <UserPlusIcon
-                            size={20}
+                            size={22}
                             color={tintColor}
                         />
                     </TouchableOpacity>
@@ -148,16 +146,29 @@ export default function HomePage() {
         });
     }, [navigation, theme.colors.text]);
 
+    const selectHandler = useCallback(
+        (id: string): void =>
+            setSelected((currentState) =>
+                symmetricDifference(currentState, new Set([id]))
+            ),
+        []
+    );
+
     return (
         <View style={{ flex: 1 }}>
             <View className="flex-row items-center gap-x-6 p-4">
                 <RectButton onPress={() => setShowCreateInput((v) => !v)}>
-                    <View className="flex-row items-center gap-x-3 rounded-full border border-text/15 bg-text/15 p-2 px-4">
+                    <View className="flex-row items-center gap-x-3 rounded-full border border-text bg-text p-2 px-4">
                         <ArrowsUpDownIcon
                             size={20}
-                            color={theme.colors.text}
+                            color={theme.colors.background}
                         />
-                        <Text variant="label">Upload</Text>
+                        <Text
+                            variant="label"
+                            color="background"
+                        >
+                            Upload
+                        </Text>
                     </View>
                 </RectButton>
                 <RectButton onPress={() => setShowCreateInput((v) => !v)}>
@@ -179,15 +190,11 @@ export default function HomePage() {
                 data={contents}
                 loading={loading}
                 refreshing={refreshing}
-                onTap={tapHandler}
+                onTap={goToFolder}
                 onLongTap={longTapHandler}
                 onRefresh={onRefresh}
                 selection={selected}
-                onSelect={(id) =>
-                    setSelected((currentState) =>
-                        symmetricDifference(currentState, new Set([id]))
-                    )
-                }
+                onSelect={selectHandler}
                 newEntryInputShown={showCreateInput}
                 onRequestStopEditing={() => setShowCreateInput(false)}
                 onSubmitEditing={(name) => {

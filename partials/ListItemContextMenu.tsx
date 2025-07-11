@@ -57,8 +57,8 @@ export default function ListItemContextMenu({
                 </View>
                 <Option
                     onSelect={onSelect}
-                    value={"add-to-favourites"}
-                    label="Add To Favourites"
+                    value={"star"}
+                    label="Star"
                 />
                 <Option
                     onSelect={onSelect}
@@ -85,7 +85,7 @@ export default function ListItemContextMenu({
                     value={"manage-permissions"}
                     label="Manage Permission"
                 />
-                <View className="border-b border-border my-2" />
+                <View className="my-2 border-b border-border" />
                 <Option
                     onSelect={onSelect}
                     value={"rename"}
@@ -106,7 +106,7 @@ export default function ListItemContextMenu({
                     value={"move-to-trash"}
                     label="Move To Trash"
                 />
-                <View className="border-b border-border my-2" />
+                <View className="my-2 border-b border-border" />
                 <Option
                     onSelect={onSelect}
                     value={"info"}
@@ -128,7 +128,7 @@ function Option({
 }) {
     return (
         <RectButton onPress={() => onSelect(value)}>
-            <View className="p-4">
+            <View className="p-4 py-2.5">
                 <Text variant="label">{label}</Text>
             </View>
         </RectButton>

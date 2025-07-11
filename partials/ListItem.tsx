@@ -1,11 +1,12 @@
-import { View } from "react-native";
-import { RectButton } from "react-native-gesture-handler";
+import { TextInput, View } from "react-native";
+import { Pressable, RectButton } from "react-native-gesture-handler";
 import Text from "../components/Text";
-import { ReactElement, ReactNode } from "react";
+import { ReactElement, ReactNode, useState } from "react";
 // eslint-disable-next-line import/no-named-as-default
 import clsx from "clsx";
 import Checkbox from "../components/Checkbox";
-import NewEntryInput from "../components/NewEntryInput";
+import { XCircleIcon } from "react-native-heroicons/outline";
+import { useTheme } from "@react-navigation/native";
 
 interface ListItemProps {
     title: string;
@@ -61,12 +62,10 @@ export default function ListItem(
                     {"leading" in props && <View>{props.leading}</View>}
                     {props.editing ?
                         <View className="flex-1">
-                            <NewEntryInput
+                            <Input
                                 value={props.title}
                                 onSubmit={props.onSubmitEditing}
-                                onRequestStopEditing={
-                                    props.onRequestStopEditing
-                                }
+                                onDismiss={props.onRequestStopEditing}
                             />
                         </View>
                     :   <View className="flex-col gap-y-2">
@@ -79,5 +78,38 @@ export default function ListItem(
                 </View>
             </View>
         </RectButton>
+    );
+}
+
+interface InputProps {
+    value: string;
+    onSubmit?(value: string): void;
+    onDismiss?(): void;
+}
+function Input(props: InputProps) {
+    const theme = useTheme();
+    const [state, setState] = useState(props.value);
+    return (
+        <View className="-ml-2.5 flex-row items-center gap-x-4">
+            <TextInput
+                value={state}
+                onChangeText={(value) => setState(value)}
+                onSubmitEditing={(e) => props.onSubmit?.(e.nativeEvent.text)}
+                onBlur={props.onDismiss}
+                selectTextOnFocus
+                autoFocus
+                multiline={false}
+                submitBehavior="blurAndSubmit"
+                numberOfLines={1}
+                autoCapitalize="none"
+                className="flex-1 border px-2.5 py-1.5 font-[MontrealRegular] text-base text-neutral-900 dark:text-neutral-100 dark:focus:border-neutral-100"
+            />
+            <Pressable onPress={props.onDismiss}>
+                <XCircleIcon
+                    size={22}
+                    color={theme.colors.text}
+                />
+            </Pressable>
+        </View>
     );
 }

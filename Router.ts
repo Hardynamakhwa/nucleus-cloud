@@ -18,6 +18,8 @@ import SearchPage from "./pages/modals/Search";
 import ManagePermissionsLinksTab from "./pages/ManagePermissions/Links";
 import ManagePermissionsPeopleTab from "./pages/ManagePermissions/People";
 import Share from "./pages/modals/Share";
+import FeedbackLayout from "./layouts/FeedbackLayout";
+import CopierPage from "./pages/Copier";
 
 export type RootStackParamList = {
     Login: undefined;
@@ -31,6 +33,13 @@ export type RootStackParamList = {
     ManagePermissions: { resource: FileType | FolderType };
     Share: {
         resource: FileType | FolderType;
+    };
+    Copier: {
+        resource: FileType | FolderType;
+        targetFolder?: {
+            id: string;
+            name?: string;
+        };
     };
     ChangePassword: undefined;
     Search: undefined;
@@ -126,6 +135,10 @@ const RootStack = createNativeStackNavigator({
                 },
                 Settings: SettingsTabs,
                 ChangePassword: ChangePasswordPage,
+                Copier: {
+                    screen: CopierPage,
+                    initialParams: { resource: null, targetFolder: null },
+                },
             },
             screenOptions: {
                 animation: "slide_from_right",
@@ -151,7 +164,7 @@ const RootStack = createNativeStackNavigator({
             backgroundColor: theme.colors.background,
         },
     }),
-    layout: ContextMenuLayout,
+    layout: (props) => FeedbackLayout({ children: ContextMenuLayout(props) }),
 });
 
 export const Navigation = createStaticNavigation(RootStack);
