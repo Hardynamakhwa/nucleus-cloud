@@ -1,0 +1,9 @@
+mutation RenameFolder($folderId: UUID!, $input: FolderUpdateInput!) {
+    folder {
+        update(id: $folderId, input: $input) {
+            id
+            name
+            updatedAt
+        }
+    }
+}

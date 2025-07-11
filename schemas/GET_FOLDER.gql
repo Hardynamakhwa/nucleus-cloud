@@ -5,6 +5,7 @@ query GetFolder($id: UUID!) {
             id
             createdAt
             updatedAt
+            path
             files {
                 id
                 name

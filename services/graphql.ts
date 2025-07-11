@@ -6,12 +6,14 @@ import {
     HttpLink,
     InMemoryCache,
 } from "@apollo/client";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { onError } from "@apollo/client/link/error";
 import { RetryLink } from "@apollo/client/link/retry";
 import { mergeDeep } from "@apollo/client/utilities";
 import { isAxiosError } from "axios";
+import { AsyncStorageWrapper, persistCacheSync } from "apollo3-cache-persist";
 import api from "./axios";
-import {AuthStore} from "../stores/auth";
+import { AuthStore } from "../stores/auth";
 import store from "../stores";
 
 const httpLink = new HttpLink({
@@ -90,32 +92,39 @@ const retryLink = new RetryLink({
     },
 });
 
-const client = new ApolloClient({
-    link: from([retryLink, errorLink, authLink, httpLink]),
-    cache: new InMemoryCache({
-        typePolicies: {
-            Query: {
-                fields: {
-                    folder: {
-                        merge(existing = {}, incoming) {
-                            return mergeDeep(existing, incoming);
-                        },
-                    },
-                },
-            },
-            FolderQueries: {
-                fields: {
-                    getAll: {
-                        keyArgs: false,
-                        merge: (_, incoming) => incoming,
-                    },
-                    get: {
-                        keyArgs: ["id"],
+const cache = new InMemoryCache({
+    typePolicies: {
+        Query: {
+            fields: {
+                folder: {
+                    merge(existing = {}, incoming) {
+                        return mergeDeep(existing, incoming);
                     },
                 },
             },
         },
-    }),
+        FolderQueries: {
+            fields: {
+                getAll: {
+                    keyArgs: false,
+                    merge: (_, incoming) => incoming,
+                },
+                get: {
+                    keyArgs: ["id"],
+                },
+            },
+        },
+    },
+});
+
+persistCacheSync({
+    cache,
+    storage: new AsyncStorageWrapper(AsyncStorage),
+});
+
+const client = new ApolloClient({
+    link: from([retryLink, errorLink, authLink, httpLink]),
+    cache,
 });
 
 export default client;
