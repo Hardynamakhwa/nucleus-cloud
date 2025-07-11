@@ -14,7 +14,8 @@ export default function ManagePermissionsLayout(props: {
     children: ReactNode;
 }) {
     const parentState = props.navigation.getParent?.()?.getState();
-    const params = parentState?.routes[parentState.index].params as
+    //@ts-ignore
+    const params = parentState?.routes[parentState.index].params?.resource as
         | FolderUnionFile
         | undefined;
 

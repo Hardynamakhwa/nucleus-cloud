@@ -113,12 +113,19 @@ function Share() {
                     id: resource.id,
                 },
             },
+            onCompleted(data, clientOptions) {
+                navigation.popTo("ManagePermissions", { resource });
+            },
+            onError(error, clientOptions) {
+                console.warn(error.message);
+            },
         });
     }, [
         createFolderPermission,
         formState.email,
         formState.permission,
-        resource.id,
+        navigation,
+        resource,
     ]);
 
     useEffect(() => {
@@ -141,7 +148,7 @@ function Share() {
                             />
                         )}
 
-                        <Text color="background">Done</Text>
+                        <Text color="background">Share</Text>
                     </Pressable>
                 );
             },
@@ -184,9 +191,7 @@ function Share() {
                 <Text variant="label">Permission</Text>
                 <View className="opacity-65">
                     <Text variant="subtitle">
-                        People with this permission to this{" "}
-                        {resource.__typename === "FileType" ? "file" : "folder"}{" "}
-                        can:
+                        {`People with this permission to this ${resource.__typename === "FileType" ? "file" : "folder"} can:`}
                     </Text>
                 </View>
                 <View className="flex-col gap-y-3">

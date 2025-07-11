@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import { ActivityIndicator, FlatList, View } from "react-native";
-import Text from "../../components/Text";
+import Text, { TextThemed as ThemedText } from "../../components/Text";
 import { useMutation, useQuery, NetworkStatus } from "@apollo/client";
 import { RectButton } from "react-native-gesture-handler";
 import {
@@ -12,13 +12,19 @@ import {
     UpdateFolderPermissionInput,
 } from "../../__generated__/schemas/graphql";
 import GravatarImage from "../../components/GravatarImage";
-import dayjs from "dayjs";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import { RootStackParamList } from "../../Router";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import PopupMenu from "../../components/PopupMenu";
 import { EyeIcon, PencilSquareIcon } from "react-native-heroicons/outline";
 import UserPlusIcon from "../../components/icons/UserPlusIcon";
+import {
+    Menu,
+    MenuOption,
+    MenuOptions,
+    MenuOptionsCustomStyle,
+    MenuTrigger,
+} from "react-native-popup-menu";
+import Checkbox from "../../components/Checkbox";
 
 type managePermissionsNavigation = NativeStackNavigationProp<
     RootStackParamList,
@@ -38,7 +44,7 @@ function People() {
     const navigation = useNavigation<managePermissionsNavigation>();
     const folder = useMemo(() => {
         const parentState = navigation.getParent()?.getState();
-        return parentState?.routes[parentState.index].params as
+        return parentState?.routes[parentState.index].params?.resource as
             | FolderType
             | FileType;
     }, [navigation]);
@@ -177,9 +183,30 @@ const PeopleItem = ({
     onRoleChange: (data: UpdateFolderPermissionInput) => void;
     isOwner: boolean;
 }) => {
+    const theme = useTheme();
+    const menuOptionsStyle: MenuOptionsCustomStyle = {
+        OptionTouchableComponent: RectButton,
+        optionWrapper: {
+            flexDirection: "row",
+            paddingHorizontal: 16,
+            paddingVertical: 8,
+            alignItems: "center",
+            columnGap: 16,
+        },
+        optionsContainer: {
+            backgroundColor: theme.colors.card,
+            borderColor: theme.colors.border,
+            borderWidth: 1,
+            borderRadius: 8,
+        },
+    };
     return (
         <RectButton>
             <View className="flex-row items-center gap-x-4 px-4 py-2">
+                <Checkbox
+                    disabled={item.role === Role.Owner}
+                    onChange={() => {}}
+                />
                 <View>
                     <GravatarImage
                         email={item.user.email}
@@ -188,29 +215,40 @@ const PeopleItem = ({
                 </View>
                 <View className="flex-1">
                     <Text variant="label">{item.user.email}</Text>
-                    {!isOwner && (
-                        <View className="opacity-65">
-                            <Text variant="subtitle">
-                                {dayjs().format(
-                                    "[On] MMM DD ddd, YYYY [at] HH:mm"
-                                )}
-                            </Text>
-                        </View>
-                    )}
                 </View>
                 {isOwner ?
                     <Text variant="label">{item.role}</Text>
-                :   <PopupMenu
-                        onOptionSelect={(role) =>
+                :   <Menu
+                        onSelect={(roleValue) => {
                             onRoleChange({
                                 permissionId: item.id,
-                                role: role as Role,
-                            })
-                        }
-                        items={ROLE_OPTIONS}
+                                role: roleValue as Role,
+                            });
+                        }}
                     >
-                        <Text>{item.role}</Text>
-                    </PopupMenu>
+                        <MenuTrigger>
+                            <View className="border-b border-dotted border-text pb-0.5">
+                                <ThemedText
+                                    variant="label"
+                                    theme={theme}
+                                >
+                                    {item.role}
+                                </ThemedText>
+                            </View>
+                        </MenuTrigger>
+                        <MenuOptions customStyles={menuOptionsStyle}>
+                            {ROLE_OPTIONS.map((role) => (
+                                <MenuOption
+                                    key={`${item.id}-${role.value}`}
+                                    value={role.value}
+                                >
+                                    <ThemedText theme={theme}>
+                                        {role.label}
+                                    </ThemedText>
+                                </MenuOption>
+                            ))}
+                        </MenuOptions>
+                    </Menu>
                 }
             </View>
         </RectButton>

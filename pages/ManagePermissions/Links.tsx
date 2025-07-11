@@ -18,12 +18,12 @@ const Links = () => {
     const theme = useTheme();
     const navigation = useNavigation<managePermissionsNavigation>();
     const parentState = navigation.getParent()?.getState();
-    const params = parentState?.routes[parentState.index].params;
+    const resource = parentState?.routes[parentState.index].params?.resource;
     const route = useRoute();
 
     const [q, { data, loading }] = useLazyQuery(GetFolderLinksDocument, {
         variables: {
-            folderId: params?.id,
+            folderId: resource?.id,
         },
     });
 
